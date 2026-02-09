@@ -157,12 +157,23 @@ export function useAuthGate(): UseAuthGateReturn  {
   };
 
   const checkBlockedUser = useCallback(
-    async (email: string) => {
+    async (uid: string, email: string | null) => {
       if (!db || !hasFirebaseConfig) return false;
-      const normalizedEmail = email.toLowerCase();
-      const blockedRef = doc(db, "blousers", normalizedEmail);
+      const blockedRef = doc(db, "blousers", uid);
       const blockedSnap = await getDoc(blockedRef);
       if (blockedSnap.exists()) {
+        setIsBlocked(true);
+        setGoogleAuthed(false);
+        setGoogleUserId("");
+        setGoogleError("Account blocked. Please contact support.");
+        return true;
+      }
+      setIsBlocked(false);
+      if (!email) return false;
+      const normalizedEmail = email.toLowerCase();
+      const emailRef = doc(db, "blousers", normalizedEmail);
+      const emailSnap = await getDoc(emailRef);
+      if (emailSnap.exists()) {
         setIsBlocked(true);
         setGoogleAuthed(false);
         setGoogleUserId("");
@@ -176,10 +187,11 @@ export function useAuthGate(): UseAuthGateReturn  {
   );
 
   const blockUser = useCallback(
-    async (email: string, reason: string) => {
+    async (uid: string, email: string | null, reason: string) => {
       if (!db || !hasFirebaseConfig) return;
-      const normalizedEmail = email.toLowerCase();
-      await setDoc(doc(db, "blousers", normalizedEmail), {
+      const normalizedEmail = email?.toLowerCase() ?? null;
+      await setDoc(doc(db, "blousers", uid), {
+        uid,
         email: normalizedEmail,
         blockedAt: serverTimestamp(),
         reason,
@@ -254,8 +266,21 @@ export function useAuthGate(): UseAuthGateReturn  {
       if (await checkBlockedUser(normalizedEmail)) {
         return;
       }
-
       await signInWithGoogleIdToken(idToken);
+      await ensureAuthReady();
+      const currentUser = auth?.currentUser ?? null;
+      if (!currentUser) {
+        setGoogleError("Unable to verify signed-in account.");
+        setGoogleAuthed(false);
+        setGoogleUserId("");
+        return;
+      }
+      if (await checkBlockedUser(currentUser.uid, currentUser.email)) {
+        if (auth) {
+          await signOut(auth);
+        }
+        return;
+      }
 
       setGoogleUserId(userId || "Unknown user");
       setGoogleAuthed(true);
@@ -301,8 +326,14 @@ export function useAuthGate(): UseAuthGateReturn  {
         const nextAttempts = pinAttempts + 1;
         setPinAttempts(nextAttempts);
         setPinError(msg);
-        if (nextAttempts >= MAX_PIN_ATTEMPTS && googleUserId) {
-          await blockUser(googleUserId, "PIN entered incorrectly 3 times.");
+        if (nextAttempts >= MAX_PIN_ATTEMPTS) {
+          await ensureAuthReady();
+          const currentUser = auth?.currentUser ?? null;
+          if (!currentUser) {
+            setPinError("Unable to verify signed-in account.");
+            return;
+          }
+          await blockUser(currentUser.uid, currentUser.email, "PIN entered incorrectly 3 times.");
         }
         return;
       }
@@ -314,7 +345,7 @@ export function useAuthGate(): UseAuthGateReturn  {
       setPinVerified(false);
       setPinError("Unable to reach /api/pin.");
     }
-  }, [blockUser, googleUserId, isBlocked, pinInput, pinAttempts, pinLocked]);
+  }, [auth, blockUser, ensureAuthReady, isBlocked, pinInput, pinAttempts, pinLocked]);
 
 
   // load Google SDK
