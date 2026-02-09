@@ -13,9 +13,16 @@ import {
   signOut,
 } from "firebase/auth";
 import {
+  doc,
+  getDoc,
+  serverTimestamp,
+  setDoc,
+} from "firebase/firestore/lite";
+import {
   clearDevSessionToken,
   DEV_SESSION_TOKEN_KEY,
 } from "@/app/lib/devSession";
+import { getDb } from "@/app/gate/getDb";
 
 
 // ============================
@@ -78,10 +85,12 @@ export function useAuthGate(): UseAuthGateReturn  {
   const [pinAttempts, setPinAttempts] = useState(0);
   const [googleError, setGoogleError] = useState("");
   const [sessionToken, setSessionToken] = useState("");
+  const [isBlocked, setIsBlocked] = useState(false);
   const { firebaseApp, hasFirebaseConfig } = firebaseAuthGate();
   const MAX_PIN_ATTEMPTS = 3;
   const ALLOWED_GOOGLE_EMAIL = "matheushaliski@gmail.com";
   const pinLocked = pinAttempts >= MAX_PIN_ATTEMPTS;
+  const db = getDb();
 
 
 // ============================
@@ -106,6 +115,7 @@ export function useAuthGate(): UseAuthGateReturn  {
     setPinAttempts(0);
     setGoogleError("");
     setSessionToken("");
+    setIsBlocked(false);
   }, []);
 
 
@@ -116,6 +126,46 @@ export function useAuthGate(): UseAuthGateReturn  {
     const cred = GoogleAuthProvider.credential(idToken);
     return signInWithCredential(auth, cred);
   };
+
+  const checkBlockedUser = useCallback(
+    async (email: string) => {
+      if (!db || !hasFirebaseConfig) return false;
+      const normalizedEmail = email.toLowerCase();
+      const blockedRef = doc(db, "blousers", normalizedEmail);
+      const blockedSnap = await getDoc(blockedRef);
+      if (blockedSnap.exists()) {
+        setIsBlocked(true);
+        setGoogleAuthed(false);
+        setGoogleUserId("");
+        setGoogleError("Account blocked. Please contact support.");
+        return true;
+      }
+      setIsBlocked(false);
+      return false;
+    },
+    [db, hasFirebaseConfig]
+  );
+
+  const blockUser = useCallback(
+    async (email: string, reason: string) => {
+      if (!db || !hasFirebaseConfig) return;
+      const normalizedEmail = email.toLowerCase();
+      await setDoc(doc(db, "blousers", normalizedEmail), {
+        email: normalizedEmail,
+        blockedAt: serverTimestamp(),
+        reason,
+      });
+      setIsBlocked(true);
+      setGoogleAuthed(false);
+      setGoogleUserId("");
+      setPinError("Account blocked. Please contact support.");
+      setGoogleError("Account blocked. Please contact support.");
+      if (auth) {
+        await signOut(auth);
+      }
+    },
+    [auth, db, hasFirebaseConfig]
+  );
 
 
 // ============================
@@ -174,6 +224,9 @@ export function useAuthGate(): UseAuthGateReturn  {
         setGoogleUserId("");
         return;
       }
+      if (await checkBlockedUser(normalizedEmail)) {
+        return;
+      }
 
       await signInWithGoogleIdToken(idToken);
 
@@ -189,6 +242,10 @@ export function useAuthGate(): UseAuthGateReturn  {
 
   const verifyPin = useCallback(async () => {
     setPinError("");
+    if (isBlocked) {
+      setPinError("Account blocked. Please contact support.");
+      return;
+    }
     if (pinLocked) {
       setPinError("Too many incorrect PIN attempts. Please contact support.");
       return;
@@ -217,6 +274,9 @@ export function useAuthGate(): UseAuthGateReturn  {
         const nextAttempts = pinAttempts + 1;
         setPinAttempts(nextAttempts);
         setPinError(msg);
+        if (nextAttempts >= MAX_PIN_ATTEMPTS && googleUserId) {
+          await blockUser(googleUserId, "PIN entered incorrectly 3 times.");
+        }
         return;
       }
 
@@ -227,7 +287,7 @@ export function useAuthGate(): UseAuthGateReturn  {
       setPinVerified(false);
       setPinError("Unable to reach /api/pin.");
     }
-  }, [pinInput, pinAttempts, pinLocked]);
+  }, [blockUser, googleUserId, isBlocked, pinInput, pinAttempts, pinLocked]);
 
 
   // load Google SDK
