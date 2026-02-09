@@ -86,6 +86,7 @@ export function useAuthGate(): UseAuthGateReturn  {
   const [googleError, setGoogleError] = useState("");
   const [sessionToken, setSessionToken] = useState("");
   const [isBlocked, setIsBlocked] = useState(false);
+  const [authReady, setAuthReady] = useState(false);
   const { firebaseApp, hasFirebaseConfig } = firebaseAuthGate();
   const MAX_PIN_ATTEMPTS = 3;
   const ALLOWED_GOOGLE_EMAIL = "matheushaliski@gmail.com";
@@ -105,6 +106,34 @@ export function useAuthGate(): UseAuthGateReturn  {
     setPersistence(auth, browserLocalPersistence).catch(() => {
     });
   }
+
+  useEffect(() => {
+    if (!auth) {
+      setAuthReady(false);
+      return;
+    }
+    const unsubscribe = onAuthStateChanged(auth, () => {
+      setAuthReady(true);
+    });
+    return () => {
+      unsubscribe();
+      setAuthReady(false);
+    };
+  }, [auth]);
+
+  const ensureAuthReady = useCallback(async () => {
+    if (authReady) return;
+    await new Promise<void>((resolve) => {
+      const check = () => {
+        if (authReady) {
+          resolve();
+          return;
+        }
+        setTimeout(check, 50);
+      };
+      check();
+    });
+  }, [authReady]);
 
   const resetGate = useCallback(() => {
     setGoogleAuthed(false);
@@ -131,7 +160,7 @@ export function useAuthGate(): UseAuthGateReturn  {
     async (email: string) => {
       if (!db || !hasFirebaseConfig) return false;
       const normalizedEmail = email.toLowerCase();
-      const blockedRef = doc(db, "blockedus1", normalizedEmail);
+      const blockedRef = doc(db, "blousers", normalizedEmail);
       const blockedSnap = await getDoc(blockedRef);
       if (blockedSnap.exists()) {
         setIsBlocked(true);
@@ -150,7 +179,7 @@ export function useAuthGate(): UseAuthGateReturn  {
     async (email: string, reason: string) => {
       if (!db || !hasFirebaseConfig) return;
       const normalizedEmail = email.toLowerCase();
-      await setDoc(doc(db, "blockedusers1", normalizedEmail), {
+      await setDoc(doc(db, "blousers", normalizedEmail), {
         email: normalizedEmail,
         blockedAt: serverTimestamp(),
         reason,
@@ -221,6 +250,10 @@ export function useAuthGate(): UseAuthGateReturn  {
       if (await checkBlockedUser(normalizedEmail)) {
         return;
       }
+      await ensureAuthReady();
+      if (await checkBlockedUser(normalizedEmail)) {
+        return;
+      }
 
       await signInWithGoogleIdToken(idToken);
 
@@ -232,7 +265,7 @@ export function useAuthGate(): UseAuthGateReturn  {
       setGoogleError("Failed to sign in to Firebase.");
       setGoogleAuthed(false);
     }
-  }, []);
+  }, [checkBlockedUser, ensureAuthReady, signInWithGoogleIdToken]);
 
   const verifyPin = useCallback(async () => {
     setPinError("");
