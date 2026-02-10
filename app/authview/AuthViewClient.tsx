@@ -5,7 +5,7 @@ import { Button } from "../components/ui/button";
 import { useEffect, useState } from "react";
 import {usePathname, useRouter} from "next/navigation";
 import {VSModalPaged} from  "@/app/lib/authAlerts";
-import {clearAuthSessionToken, setAuthSessionProfile, setAuthSessionToken} from "@/app/lib/authSession";
+import {clearAuthSessionToken, setAuthSessionProfile} from "@/app/lib/authSession";
 import { getDevSessionToken, setDevSessionToken } from "@/app/lib/devSession";
 
 export default function AuthViewClient() {
@@ -71,7 +71,6 @@ export default function AuthViewClient() {
             }
 
             const token = crypto.randomUUID();
-            setAuthSessionToken(token);
             setAuthSessionProfile({ email: normalizedEmail });
             setDevSessionToken(token);
             router.replace("/restaurantcardspage");

@@ -1,21 +1,18 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import {getAuthSessionToken} from "@/app/lib/authSession";
+import { getServerSession } from "@/app/lib/clientSession";
 
-type GetRedirectPath = () => string | null;
+export function useSessionReady(): void {
+    const router = useRouter();
 
-export function useSessionReady():void {
-  const router = useRouter();
-  const [ready, setReady] = useState(false);
-
-  useEffect(() => {
-    const existing = getAuthSessionToken();
-    if (!existing) {
-      router.replace("/authview");
-      return;
-    }
-  }, [router]);
-
-};
+    useEffect(() => {
+        void (async () => {
+            const existing = await getServerSession();
+            if (!existing) {
+                router.replace("/authview");
+            }
+        })();
+    }, [router]);
+}

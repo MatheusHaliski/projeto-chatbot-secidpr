@@ -45,7 +45,7 @@ import {
 } from "@/app/lib/authSession";
 
 
-import {getAuthSessionToken} from "@/app/lib/authSession";
+import { getServerSession, clearServerSession } from "@/app/lib/clientSession";
 /* =========================
    Data fetch (Server)
 ========================= */
@@ -191,16 +191,13 @@ export function RestaurantCardsInner() {
         [catalogById, detailsById, pageIds]
     );
     useEffect(() => {
-        const t1 = getAuthSessionToken();
-        if (!t1) {
-            router.replace("/authview");
-            return;
-        }
+        void (async () => {
+            const session = await getServerSession();
+            if (!session) {
+                router.replace("/authview");
+            }
+        })();
     }, [router]);
-    useEffect(() => {
-        const token1 = getAuthSessionToken();
-    })
-
 
     useEffect(() => {
         if (!firebaseApp) return undefined;
@@ -234,9 +231,11 @@ export function RestaurantCardsInner() {
         }
 
         try {
+            await clearServerSession();
             clearAuthSessionProfile();
             clearAuthSessionToken();
             setAuthError("");
+            router.replace("/authview");
         } catch (signOutError) {
             console.error("[RestaurantCardsPage] sign out failed:", signOutError);
             setAuthError("Failed to sign out.");

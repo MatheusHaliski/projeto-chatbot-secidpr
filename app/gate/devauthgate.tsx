@@ -9,7 +9,7 @@ import {
     setDevSessionToken,
 } from "@/app/lib/devSession";
 import { clearAuthSessionProfile, clearAuthSessionToken } from "@/app/lib/authSession";
-import Script from "next/script";
+import { clearServerSession } from "@/app/lib/clientSession";
 
 export default function DevAuthGate() {
     const {
@@ -32,6 +32,7 @@ export default function DevAuthGate() {
         if (pathname !== "/") return;
         resetGate();
         clearDevSessionToken();
+        void clearServerSession();
         clearAuthSessionToken();
         clearAuthSessionProfile();
     }, [pathname, resetGate]);
@@ -39,7 +40,7 @@ export default function DevAuthGate() {
     useEffect(() => {
         if (typeof window === "undefined") return;
 
-        const g = (window as any).google;
+        const g = (window as Window & { google?: { accounts?: { id?: { initialize: (params: { client_id?: string }) => void; renderButton: (element: HTMLElement | null, options: { theme: string; size: string; width: number }) => void; }; }; }; }).google;
         if (!g?.accounts?.id) return; // script ainda não carregou
 
         g.accounts.id.initialize({
@@ -60,7 +61,6 @@ export default function DevAuthGate() {
         }else{
             const token = crypto.randomUUID();
             setDevSessionToken(token);
-            const existing2 = getDevSessionToken();
         }
     }, [googleAuthed, pinVerified, router]);
 

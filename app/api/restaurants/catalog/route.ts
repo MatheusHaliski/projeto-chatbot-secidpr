@@ -1,9 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { getAdminFirestore } from "@/app/lib/firebaseAdmin";
+import { requireSession } from "@/app/lib/serverSession";
 import type { Restaurant } from "@/app/gate/restaurantpagegate";
 
-export async function GET(_request: NextRequest): Promise<Response> {
+export async function GET(request: NextRequest): Promise<Response> {
+    const session = requireSession(request);
+    if (!session) {
+        return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
+    }
     try {
         const db = getAdminFirestore();
         const snapshot = await db
