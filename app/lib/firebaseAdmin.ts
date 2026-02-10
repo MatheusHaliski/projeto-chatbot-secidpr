@@ -10,13 +10,34 @@ import { getFirestore, type Firestore } from "firebase-admin/firestore";
 
 let firestoreInstance: Firestore | null = null;
 
+const parsePrivateKey = (rawPrivateKey?: string) => {
+    if (!rawPrivateKey) return null;
+
+    const normalized = rawPrivateKey
+        .trim()
+        .replace(/^['\"]|['\"]$/g, "")
+        .replace(/\\n/g, "\n");
+
+    if (normalized.includes("BEGIN PRIVATE KEY")) {
+        return normalized;
+    }
+
+    try {
+        const decoded = Buffer.from(normalized, "base64").toString("utf8").trim();
+        if (decoded.includes("BEGIN PRIVATE KEY")) {
+            return decoded;
+        }
+    } catch {
+        // noop: when key isn't base64-encoded we keep the normalized value.
+    }
+
+    return normalized;
+};
+
 const getServiceAccountConfig = () => {
     const projectId = process.env.NEXT_FIREBASE_ADMIN_PROJECT_ID;
     const clientEmail = process.env.NEXT_FIREBASE_ADMIN_CLIENT_EMAIL;
-    const privateKey = process.env.NEXT_FIREBASE_ADMIN_PRIVATE_KEY?.replace(
-        /\\n/g,
-        "\n"
-    );
+    const privateKey = parsePrivateKey(process.env.NEXT_FIREBASE_ADMIN_PRIVATE_KEY);
 
     if (!projectId || !clientEmail || !privateKey) return null;
     return { projectId, clientEmail, privateKey };
