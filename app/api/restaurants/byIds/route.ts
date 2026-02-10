@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { getAdminFirestore } from "@/app/lib/firebaseAdmin";
+import { requireSession } from "@/app/lib/serverSession";
 import type { Restaurant } from "@/app/gate/restaurantpagegate";
 
 type ByIdsPayload = {
@@ -8,6 +9,10 @@ type ByIdsPayload = {
 };
 
 export async function POST(request: NextRequest): Promise<Response> {
+    const session = requireSession(request);
+    if (!session) {
+        return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
+    }
     try {
         const payload = (await request.json()) as ByIdsPayload;
         const ids = Array.isArray(payload?.ids)

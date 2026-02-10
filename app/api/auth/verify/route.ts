@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "node:crypto";
 import { getAdminFirestore } from "@/app/lib/firebaseAdmin";
+import { createSessionToken, setSessionCookie } from "@/app/lib/serverSession";
+
 export const runtime = "nodejs";
+
 type AuthPayload = {
     email?: string;
     password?: string;
@@ -19,10 +22,7 @@ const HASH_ALGORITHM = "SHA-256";
 const APP_PEPPER = "vs-usercontrol-v1";
 
 const buildSalt = (saltBase64: string) =>
-    Buffer.concat([
-        Buffer.from(saltBase64, "base64"),
-        Buffer.from(APP_PEPPER),
-    ]);
+    Buffer.concat([Buffer.from(saltBase64, "base64"), Buffer.from(APP_PEPPER)]);
 
 const hashPassword = (
     password: string,
@@ -46,10 +46,7 @@ const hashPassword = (
         );
     });
 
-const verifyPassword = async (
-    password: string,
-    digest: UserRecord
-) => {
+const verifyPassword = async (password: string, digest: UserRecord) => {
     if (
         !digest.passwordHash ||
         !digest.passwordSalt ||
@@ -69,7 +66,6 @@ const verifyPassword = async (
 };
 
 export async function POST(request: NextRequest): Promise<Response> {
-
     let body: AuthPayload = {};
     try {
         body = (await request.json()) as AuthPayload;
@@ -95,11 +91,10 @@ export async function POST(request: NextRequest): Promise<Response> {
             .limit(1)
             .get();
 
-        const record = snapshot.empty
-            ? null
-            : (snapshot.docs[0]?.data() as UserRecord);
+        const doc = snapshot.empty ? null : snapshot.docs[0];
+        const record = doc ? (doc.data() as UserRecord) : null;
 
-        if (!record) {
+        if (!record || !doc) {
             return NextResponse.json(
                 { error: "No account was found with these credentials." },
                 { status: 401 }
@@ -118,7 +113,10 @@ export async function POST(request: NextRequest): Promise<Response> {
             );
         }
 
-        return NextResponse.json({ ok: true });
+        const sessionToken = createSessionToken({ sub: doc.id, email });
+        const response = NextResponse.json({ ok: true });
+        setSessionCookie(response, sessionToken);
+        return response;
     } catch (error) {
         console.error("[Auth Verify API] credential check failed:", error);
         return NextResponse.json(

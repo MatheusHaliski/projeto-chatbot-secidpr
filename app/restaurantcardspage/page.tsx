@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
-import { getAuthSessionToken } from "@/app/lib/authSession";
+import { getServerSession } from "@/app/lib/clientSession";
 import { RestaurantCardsInner } from "@/app/restaurantcardspage/RestaurantCardsInner";
 
 export default function RestaurantCardsPage() {
@@ -11,12 +11,14 @@ export default function RestaurantCardsPage() {
   const [sessionReady, setSessionReady] = useState(false);
 
   useEffect(() => {
-    const existing = getAuthSessionToken();
-    if (!existing) {
-      router.replace("/authview");
-      return;
-    }
-    setSessionReady(true);
+    void (async () => {
+      const existing = await getServerSession();
+      if (!existing) {
+        router.replace("/authview");
+        return;
+      }
+      setSessionReady(true);
+    })();
   }, [router]);
 
   if (!sessionReady) {

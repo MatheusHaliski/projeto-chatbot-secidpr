@@ -8,13 +8,12 @@ import {
 import { normalizeCategoryLabel } from "@/app/gate/categories";
 
 import { TEXT_GLOW, FILTER_GLOW_LINE, CARD_GLASS } from "@/app/lib/uiToken";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   getAuthSessionProfile,
-  getAuthSessionToken,
 } from "@/app/lib/authSession";
+import { getServerSession } from "@/app/lib/clientSession";
 import { VSModalPaged } from "@/app/lib/authAlerts";
-import {router} from "next/client";
 import {useRouter} from "next/navigation";
 /* ======================
    TYPES
@@ -82,11 +81,12 @@ export default function RestaurantInfoFront({ restaurant, reviews }: Props) {
   const router = useRouter();
 
   useEffect(() => {
-    const existing = getAuthSessionToken();
-    if (!existing) {
-      router.replace("/authview");
-      return;
-    }
+    void (async () => {
+      const existing = await getServerSession();
+      if (!existing) {
+        router.replace("/authview");
+      }
+    })();
   }, [router]);
   // Reviews locais (pra renderizar imediatamente após submit)
   const [localReviews, setLocalReviews] = useState<Review[]>(reviews);
@@ -194,8 +194,9 @@ export default function RestaurantInfoFront({ restaurant, reviews }: Props) {
       setLocalReviews((prev) => [newReview, ...prev]);
       setReviewRating(0);
       setReviewText("");
-    } catch (err: any) {
-      setSubmitError(err?.message || "Unable to submit commentary.");
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Unable to submit commentary.";
+      setSubmitError(message);
     } finally {
       setSubmitting(false);
     }
