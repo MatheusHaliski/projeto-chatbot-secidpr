@@ -3,7 +3,7 @@ import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import { getAuth } from "firebase-admin/auth";
 
-import { getAdminFirestore } from "@/app/lib/firebaseAdmin";
+import { getAdminApp } from "@/app/lib/firebaseAdmin";
 
 const COOKIE_NAME = "restaurantcards_pin";
 const TOKEN_TTL_MS = 1000 * 60 * 15;
@@ -74,8 +74,8 @@ const verifyAllowedGoogleIdentity = async (
     }
 
     try {
-        getAdminFirestore();
-        const decoded = await getAuth().verifyIdToken(idToken, true);
+        const adminApp = getAdminApp();
+        const decoded = await getAuth(adminApp).verifyIdToken(idToken, true);
         const email = decoded.email?.toLowerCase() ?? "";
 
         if (!email) {
@@ -118,22 +118,8 @@ export function buildSetCookie(value: string) {
     return parts.join("; ");
 }
 
-function buildClearCookie() {
-    const parts = [
-        `${COOKIE_NAME}=`,
-        "Max-Age=0",
-        "Path=/",
-        "HttpOnly",
-        "SameSite=Lax",
-    ];
-
-    if (process.env.NODE_ENV === "production") parts.push("Secure");
-
-    return parts.join("; ");
-}
-
 export async function POST(request: NextRequest): Promise<Response> {
-const identity = await verifyAllowedGoogleIdentity(request);
+    const identity = await verifyAllowedGoogleIdentity(request);
     if (!identity.ok) {
         return identity.response;
     }
@@ -168,7 +154,7 @@ const identity = await verifyAllowedGoogleIdentity(request);
 }
 
 export async function GET(request: NextRequest): Promise<Response> {
-const identity = await verifyAllowedGoogleIdentity(request);
+    const identity = await verifyAllowedGoogleIdentity(request);
     if (!identity.ok) {
         return identity.response;
     }
