@@ -184,13 +184,4 @@ export async function GET(request: NextRequest): Promise<Response> {
     return json({ ok: true }, 200);
 }
 
-export async function DELETE(request: NextRequest): Promise<Response> {
-    const identity = await verifyAllowedGoogleIdentity(request);
-    if (!identity.ok) {
-        return identity.response;
-    }
 
-    const res = json({ ok: true }, 200);
-    res.headers.set("Set-Cookie", buildClearCookie());
-    return res;
-}
