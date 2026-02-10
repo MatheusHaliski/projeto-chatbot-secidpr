@@ -1,9 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
+import { getAuth } from "firebase-admin/auth";
+
+import { getAdminFirestore } from "@/app/lib/firebaseAdmin";
 
 const COOKIE_NAME = "restaurantcards_pin";
 const TOKEN_TTL_MS = 1000 * 60 * 15;
+const ALLOWED_GOOGLE_EMAIL = "matheushaliski@gmail.com";
 
 const json = (payload: Record<string, unknown>, status: number) =>
     NextResponse.json(payload, { status });
@@ -42,6 +46,65 @@ export function verifyToken(token: string, secret: string) {
     return true;
 }
 
+const verifyAllowedGoogleIdentity = async (
+    request: NextRequest
+): Promise<{ ok: true; email: string } | { ok: false; response: Response }> => {
+    const authorization = request.headers.get("authorization") ?? "";
+    const bearerPrefix = "Bearer ";
+
+    if (!authorization.startsWith(bearerPrefix)) {
+        return {
+            ok: false,
+            response: json(
+                { error: "Missing Firebase auth token." },
+                401
+            ),
+        };
+    }
+
+    const idToken = authorization.slice(bearerPrefix.length).trim();
+    if (!idToken) {
+        return {
+            ok: false,
+            response: json(
+                { error: "Missing Firebase auth token." },
+                401
+            ),
+        };
+    }
+
+    try {
+        getAdminFirestore();
+        const decoded = await getAuth().verifyIdToken(idToken, true);
+        const email = decoded.email?.toLowerCase() ?? "";
+
+        if (!email) {
+            return {
+                ok: false,
+                response: json({ error: "Unable to verify account email." }, 403),
+            };
+        }
+
+        if (email !== ALLOWED_GOOGLE_EMAIL) {
+            return {
+                ok: false,
+                response: json(
+                    { error: `Only ${ALLOWED_GOOGLE_EMAIL} is allowed.` },
+                    403
+                ),
+            };
+        }
+
+        return { ok: true, email };
+    } catch (error) {
+        console.error("[PIN API] Firebase token verification failed:", error);
+        return {
+            ok: false,
+            response: json({ error: "Invalid Firebase auth token." }, 401),
+        };
+    }
+};
+
 export function buildSetCookie(value: string) {
     const parts = [
         `${COOKIE_NAME}=${value}`,
@@ -70,7 +133,12 @@ function buildClearCookie() {
 }
 
 export async function POST(request: NextRequest): Promise<Response> {
-    const hash = "$2b$05$0PBMbEUT1v6vedJo0cN6guSzQ16utWukLn3lRQpIGrjk3Xc3clTem";
+    const identity = await verifyAllowedGoogleIdentity(request);
+    if (!identity.ok) {
+        return identity.response;
+    }
+
+    const hash = process.env.PIN_HASH;
     const secret = process.env.PIN_COOKIE_SECRET;
 
     if (!hash) return json({ ok: false, error: "PIN_HASH not configured." }, 500);
@@ -95,12 +163,17 @@ export async function POST(request: NextRequest): Promise<Response> {
 
     const token = makeToken(secret);
 
-    const res = json({ ok: true }, 200);
+    const res = json({ ok: true, email: identity.email }, 200);
     res.headers.set("Set-Cookie", buildSetCookie(token));
     return res;
 }
 
 export async function GET(request: NextRequest): Promise<Response> {
+    const identity = await verifyAllowedGoogleIdentity(request);
+    if (!identity.ok) {
+        return identity.response;
+    }
+
     const secret = process.env.PIN_COOKIE_SECRET;
     if (!secret) return json({ ok: false }, 500);
 
@@ -116,10 +189,15 @@ export async function GET(request: NextRequest): Promise<Response> {
     const ok = verifyToken(token, secret);
     if (!ok) return json({ ok: false }, 401);
 
-    return json({ ok: true }, 200);
+    return json({ ok: true, email: identity.email }, 200);
 }
 
-export async function DELETE(): Promise<Response> {
+export async function DELETE(request: NextRequest): Promise<Response> {
+    const identity = await verifyAllowedGoogleIdentity(request);
+    if (!identity.ok) {
+        return identity.response;
+    }
+
     const res = json({ ok: true }, 200);
     res.headers.set("Set-Cookie", buildClearCookie());
     return res;

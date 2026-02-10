@@ -366,6 +366,18 @@ export function useAuthGate(): UseAuthGateReturn {
     };
   }, [clientId, handleGoogleResponse]);
 
+
+
+  const buildFirebaseAuthHeader = useCallback(async (): Promise<Record<string, string> | null> => {
+    const currentUser = await waitForUser();
+    if (!currentUser) return null;
+
+    const token = await currentUser.getIdToken();
+    if (!token) return null;
+
+    return { Authorization: `Bearer ${token}` };
+  }, [waitForUser]);
+
   // ============================
   // PIN verify
   // ============================
@@ -389,9 +401,16 @@ export function useAuthGate(): UseAuthGateReturn {
     }
 
     try {
+      const authHeader = await buildFirebaseAuthHeader();
+      if (!authHeader) {
+        setPinVerified(false);
+        setPinError("Unable to verify signed-in account.");
+        return;
+      }
+
       const res = await fetch("/api/pin", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { ...authHeader, "Content-Type": "application/json" },
         body: JSON.stringify({ pin: normalized }),
       });
 
@@ -437,6 +456,7 @@ export function useAuthGate(): UseAuthGateReturn {
     pinInput,
     pinLocked,
     waitForUser,
+    buildFirebaseAuthHeader,
   ]);
 
   return {
