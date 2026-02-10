@@ -13,7 +13,7 @@ type SessionClaims = {
 };
 
 const getSecret = (): string => {
-    const secret = process.env.PIN_COOKIE_SECRET;
+    const secret = process.env.AUTH_SESSION_SECRET;
     if (!secret) {
         throw new Error("AUTH_SESSION_SECRET is not configured.");
     }

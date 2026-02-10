@@ -3,7 +3,7 @@ import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import { getAuth } from "firebase-admin/auth";
 
-import { getAdminApp } from "@/app/lib/firebaseAdmin";
+import { getAdminFirestore } from "@/app/lib/firebaseAdmin";
 
 const COOKIE_NAME = "restaurantcards_pin";
 const TOKEN_TTL_MS = 1000 * 60 * 15;
@@ -74,8 +74,8 @@ const verifyAllowedGoogleIdentity = async (
     }
 
     try {
-        const adminApp = getAdminApp();
-        const decoded = await getAuth(adminApp).verifyIdToken(idToken, true);
+        getAdminFirestore();
+        const decoded = await getAuth().verifyIdToken(idToken);
         const email = decoded.email?.toLowerCase() ?? "";
 
         if (!email) {
@@ -98,9 +98,10 @@ const verifyAllowedGoogleIdentity = async (
         return { ok: true, email };
     } catch (error) {
         console.error("[PIN API] Firebase token verification failed:", error);
+        const message = error instanceof Error ? error.message : "Unknown error";
         return {
             ok: false,
-            response: json({ error: "Invalid Firebase auth token." }, 401),
+            response: json({ error: `Invalid Firebase auth token. ${message}` }, 401),
         };
     }
 };
@@ -118,11 +119,26 @@ export function buildSetCookie(value: string) {
     return parts.join("; ");
 }
 
+function buildClearCookie() {
+    const parts = [
+        `${COOKIE_NAME}=`,
+        "Max-Age=0",
+        "Path=/",
+        "HttpOnly",
+        "SameSite=Lax",
+    ];
+
+    if (process.env.NODE_ENV === "production") parts.push("Secure");
+
+    return parts.join("; ");
+}
+
 export async function POST(request: NextRequest): Promise<Response> {
     const identity = await verifyAllowedGoogleIdentity(request);
     if (!identity.ok) {
         return identity.response;
     }
+
     const hash = process.env.PIN_HASH;
     const secret = process.env.PIN_COOKIE_SECRET;
 
@@ -148,7 +164,7 @@ export async function POST(request: NextRequest): Promise<Response> {
 
     const token = makeToken(secret);
 
-    const res = json({ ok: true }, 200);
+    const res = json({ ok: true, email: identity.email }, 200);
     res.headers.set("Set-Cookie", buildSetCookie(token));
     return res;
 }
@@ -158,6 +174,7 @@ export async function GET(request: NextRequest): Promise<Response> {
     if (!identity.ok) {
         return identity.response;
     }
+
     const secret = process.env.PIN_COOKIE_SECRET;
     if (!secret) return json({ ok: false }, 500);
 
@@ -173,7 +190,16 @@ export async function GET(request: NextRequest): Promise<Response> {
     const ok = verifyToken(token, secret);
     if (!ok) return json({ ok: false }, 401);
 
-    return json({ ok: true }, 200);
+    return json({ ok: true, email: identity.email }, 200);
 }
 
+export async function DELETE(request: NextRequest): Promise<Response> {
+    const identity = await verifyAllowedGoogleIdentity(request);
+    if (!identity.ok) {
+        return identity.response;
+    }
 
+    const res = json({ ok: true }, 200);
+    res.headers.set("Set-Cookie", buildClearCookie());
+    return res;
+}
