@@ -4,10 +4,15 @@ import crypto from "crypto";
 import { getAuth } from "firebase-admin/auth";
 
 import { getAdminFirestore } from "@/app/lib/firebaseAdmin";
+import { consumeRateLimit, resolveClientIp } from "@/app/lib/security/basicRateLimit";
 
 const COOKIE_NAME = "restaurantcards_pin";
 const TOKEN_TTL_MS = 1000 * 60 * 15;
 const ALLOWED_GOOGLE_EMAIL = "matheushaliski@gmail.com";
+const PIN_VERIFY_LIMIT_MAX = Number(process.env.PIN_VERIFY_RATE_LIMIT_MAX ?? "6");
+const PIN_VERIFY_LIMIT_WINDOW_MS = Number(
+    process.env.PIN_VERIFY_RATE_LIMIT_WINDOW_MS ?? "60000"
+);
 
 const json = (payload: Record<string, unknown>, status: number) =>
     NextResponse.json(payload, { status });
@@ -156,6 +161,26 @@ export async function POST(request: NextRequest): Promise<Response> {
     }
 
     if (!pin) return json({ ok: false, error: "PIN is required." }, 400);
+
+    const clientIp = resolveClientIp(request);
+    const rateLimit = consumeRateLimit({
+        namespace: "pin-verify",
+        key: `${clientIp}:${identity.email}`,
+        maxRequests: PIN_VERIFY_LIMIT_MAX,
+        windowMs: PIN_VERIFY_LIMIT_WINDOW_MS,
+    });
+
+    if (!rateLimit.allowed) {
+        const response = json(
+            {
+                ok: false,
+                error: "Too many PIN attempts. Please try again shortly.",
+            },
+            429
+        );
+        response.headers.set("Retry-After", String(rateLimit.retryAfterSeconds));
+        return response;
+    }
 
     const matches = await bcrypt.compare(pin, hash);
     if (!matches) {
