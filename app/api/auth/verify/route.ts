@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import crypto from "node:crypto";
 import { getAdminFirestore } from "@/app/lib/firebaseAdmin";
 import { createSessionToken, setSessionCookie } from "@/app/lib/serverSession";
-
+import { verifyAllowedGoogleIdentity } from "@/app/api/pin/route"
 export const runtime = "nodejs";
 
 type AuthPayload = {
@@ -66,6 +66,10 @@ const verifyPassword = async (password: string, digest: UserRecord) => {
 };
 
 export async function POST(request: NextRequest): Promise<Response> {
+    const identity = await verifyAllowedGoogleIdentity(request);
+    if (!identity.ok) {
+        return identity.response;
+    }
     let body: AuthPayload = {};
     try {
         body = (await request.json()) as AuthPayload;
