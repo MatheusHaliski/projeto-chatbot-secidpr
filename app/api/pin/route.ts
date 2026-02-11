@@ -46,7 +46,7 @@ export function verifyToken(token: string, secret: string) {
     return true;
 }
 
-const verifyAllowedGoogleIdentity = async (
+export const verifyAllowedGoogleIdentity = async (
     request: NextRequest
 ): Promise<{ ok: true; email: string } | { ok: false; response: Response }> => {
     const authorization = request.headers.get("authorization") ?? "";
