@@ -45,7 +45,7 @@ import {
 } from "@/app/lib/authSession";
 
 
-import { getServerSession, clearServerSession } from "@/app/lib/clientSession";
+import {getAuthSessionToken} from "@/app/lib/authSession";
 /* =========================
    Data fetch (Server)
 ========================= */
@@ -191,13 +191,16 @@ export function RestaurantCardsInner() {
         [catalogById, detailsById, pageIds]
     );
     useEffect(() => {
-        void (async () => {
-            const session = await getServerSession();
-            if (!session) {
-                router.replace("/authview");
-            }
-        })();
+        const t1 = getAuthSessionToken();
+        if (!t1) {
+            router.replace("/authview");
+            return;
+        }
     }, [router]);
+    useEffect(() => {
+        const token1 = getAuthSessionToken();
+    })
+
 
     useEffect(() => {
         if (!firebaseApp) return undefined;
@@ -231,11 +234,9 @@ export function RestaurantCardsInner() {
         }
 
         try {
-            await clearServerSession();
             clearAuthSessionProfile();
             clearAuthSessionToken();
             setAuthError("");
-            router.replace("/authview");
         } catch (signOutError) {
             console.error("[RestaurantCardsPage] sign out failed:", signOutError);
             setAuthError("Failed to sign out.");
@@ -629,7 +630,7 @@ export function RestaurantCardsInner() {
                     ].join(" ")}>
                         <div className="flex items-center gap-4">
                             <img
-                                src="/COOK.jpeg"
+                                src="/COOK1.png"
                                 alt="Velion Infyra Technology Platforms, Inc."
                                 className="h-14 w-auto"
                             />

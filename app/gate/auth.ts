@@ -1,31 +1,22 @@
-"use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
+import {usePathname, useRouter} from "next/navigation";
 import { firebaseAuthGate } from "./firebaseClient";
-
 import {
   getAuth,
   GoogleAuthProvider,
   onAuthStateChanged,
   setPersistence,
   browserLocalPersistence,
+  signInWithPopup,
   signInWithCredential,
   signOut,
-  type Auth,
-  type User,
 } from "firebase/auth";
-
 import {
-  doc,
-  getDoc,
-  serverTimestamp,
-  setDoc,
-  type Firestore,
-} from "firebase/firestore/lite";
+  clearDevSessionToken,
+  DEV_SESSION_TOKEN_KEY,
+} from "@/app/lib/devSession";
 
-import { DEV_SESSION_TOKEN_KEY } from "@/app/lib/devSession";
-import { getDb } from "@/app/gate/getDb";
 
 // ============================
 // Google Identity types
@@ -47,114 +38,96 @@ declare global {
         id?: {
           initialize: (config: GoogleIdInitializeConfig) => void;
           renderButton: (
-            parent: HTMLElement | null,
-            options: Record<string, unknown>
+              parent: HTMLElement | null,
+              options: Record<string, unknown>
           ) => void;
         };
       };
     };
   }
 }
-
 type UseAuthGateReturn = {
   googleAuthed: boolean;
   googleUserId: string;
   googleError: string;
-
   pinInput: string;
   setPinInput: React.Dispatch<React.SetStateAction<string>>;
   pinVerified: boolean;
   pinError: string;
   pinAttempts: number;
   pinLocked: boolean;
-
   DEV_SESSION_TOKEN_CONTROL_KEY: string;
   TOKEN_KEY: string;
-
   verifyPin: () => Promise<void>;
   resetGate: () => void;
 };
 
-export function useAuthGate(): UseAuthGateReturn {
-  // ============================
-  // constants
-  // ============================
+export function useAuthGate(): UseAuthGateReturn  {
+// ============================
+// constants
+// ============================
   const TOKEN_KEY = DEV_SESSION_TOKEN_KEY;
   const DEV_SESSION_TOKEN_CONTROL_KEY = "false";
   const router = useRouter();
 
-  const MAX_PIN_ATTEMPTS = 3;
-  const ALLOWED_GOOGLE_EMAIL = "matheushaliski@gmail.com";
-
-  const { firebaseApp, hasFirebaseConfig } = firebaseAuthGate();
-  const db = getDb() as Firestore | null;
-
-  // ============================
-  // state
-  // ============================
   const [googleAuthed, setGoogleAuthed] = useState(false);
   const [googleUserId, setGoogleUserId] = useState("");
-  const [googleError, setGoogleError] = useState("");
-
   const [pinInput, setPinInput] = useState("");
   const [pinVerified, setPinVerified] = useState(false);
   const [pinError, setPinError] = useState("");
   const [pinAttempts, setPinAttempts] = useState(0);
+  const [googleError, setGoogleError] = useState("");
+  const [sessionToken, setSessionToken] = useState("");
+  const { firebaseApp, hasFirebaseConfig } = firebaseAuthGate();
+  const MAX_PIN_ATTEMPTS = 3;
+  const ALLOWED_GOOGLE_EMAIL = "matheushaliski@gmail.com";
   const pinLocked = pinAttempts >= MAX_PIN_ATTEMPTS;
 
-  const [isBlocked, setIsBlocked] = useState(false);
 
-  // ============================
-  // auth instance (stable)
-  // ============================
-  const auth: Auth | null = useMemo(() => {
-    if (typeof window === "undefined") return null;
-    if (!firebaseApp) return null;
-    return getAuth(firebaseApp);
-  }, [firebaseApp]);
+// ============================
+// firebase auth helpers
+// ============================
+  const auth =
+      typeof window !== "undefined" && firebaseApp ? getAuth(firebaseApp) : null;
 
-  // set persistence only once per auth instance
-  useEffect(() => {
-    if (!auth) return;
-    setPersistence(auth, browserLocalPersistence).catch(() => {});
-  }, [auth]);
+  const provider = new GoogleAuthProvider();
 
-  // helper: wait for a stable auth state (returns user or null)
-  const waitForUser = useCallback(async (): Promise<User | null> => {
-    if (!auth) return null;
-    if (auth.currentUser) return auth.currentUser;
-
-    return await new Promise<User | null>((resolve) => {
-      const unsub = onAuthStateChanged(auth, (u) => {
-        unsub();
-        resolve(u);
-      });
+  if (typeof window !== "undefined" && auth) {
+    setPersistence(auth, browserLocalPersistence).catch(() => {
     });
-  }, [auth]);
-
-  const safeSignOut = useCallback(async () => {
-    if (!auth) return;
-    try {
-      await signOut(auth);
-    } catch (e: any) {
-      console.error("[AuthGate] signOut failed:", e?.code, e?.message);
-    }
-  }, [auth]);
+  }
 
   const resetGate = useCallback(() => {
     setGoogleAuthed(false);
     setGoogleUserId("");
-    setGoogleError("");
     setPinVerified(false);
     setPinInput("");
     setPinError("");
     setPinAttempts(0);
-    setIsBlocked(false);
+    setGoogleError("");
+    setSessionToken("");
   }, []);
 
-  // ============================
-  // helpers
-  // ============================
+
+  const signInWithGoogleIdToken = (idToken: string) => {
+    if (!auth) {
+      return Promise.reject(new Error("Firebase auth is not configured."));
+    }
+    const cred = GoogleAuthProvider.credential(idToken);
+    return signInWithCredential(auth, cred);
+  };
+
+
+// ============================
+// helpers
+// ============================
+  function createToken(): string {
+    const bytes = new Uint8Array(32);
+    crypto.getRandomValues(bytes);
+    const b64 = btoa(String.fromCharCode(...bytes));
+    return b64.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
+  }
+
   function parseGoogleCredential(credential: string): string {
     if (!credential) return "";
     try {
@@ -162,8 +135,8 @@ export function useAuthGate(): UseAuthGateReturn {
       if (!payload) return "";
       let normalized = payload.replace(/-/g, "+").replace(/_/g, "/");
       normalized = normalized.padEnd(
-        normalized.length + ((4 - (normalized.length % 4)) % 4),
-        "="
+          normalized.length + ((4 - (normalized.length % 4)) % 4),
+          "="
       );
       const json = atob(normalized);
       const data = JSON.parse(json) as { email?: string; sub?: string };
@@ -173,159 +146,94 @@ export function useAuthGate(): UseAuthGateReturn {
     }
   }
 
-  // ============================
-  // blocked checks (safe)
-  // ============================
-  const checkBlockedUser = useCallback(
-    async (uid: string, email: string | null): Promise<boolean> => {
-      if (!db || !hasFirebaseConfig) return false;
+  const clientId ="457209482063-s3q59rtck2dg6mcruuq2qbea1ee7ofe8.apps.googleusercontent.com";
 
-      try {
-        // check by UID
-        if (uid){
-        const uidRef = doc(db, "blousers", uid);
-        const uidSnap = await getDoc(uidRef);
-        if (uidSnap.exists()) return true;
-        }
-        // check by email (normalized)
-        else if (email) {
-          const normalizedEmail = email.toLowerCase();
-          const emailRef = doc(db, "blousers", normalizedEmail);
-          const emailSnap = await getDoc(emailRef);
-          if (emailSnap.exists()) return true;
-        }
+  console.log("IS:",clientId);
 
-        return false;
-      } catch (e: any) {
-        // IMPORTANT: do not break auth flow due to rules/network.
-        console.warn("[AuthGate] blocked check failed:", e?.code || e?.message);
-        return false;
-      }
-    },
-    [db, hasFirebaseConfig]
-  );
 
-  const blockUser = useCallback(
-    async (uid: string, email: string | null, reason: string) => {
-      if (!db || !hasFirebaseConfig) return;
 
-      const normalizedEmail = email?.toLowerCase() ?? null;
-
-      try {
-        await setDoc(doc(db, "blousers", uid), {
-          uid,
-          email: normalizedEmail,
-          blockedAt: serverTimestamp(),
-          reason,
-        });
-      } catch (e: any) {
-        console.error("[AuthGate] failed to write block record:", e?.code, e?.message);
+  const handleGoogleResponse = useCallback(async (response: GoogleCredentialResponse) => {
+    try {
+      const idToken = response?.credential;
+      if (!idToken) {
+        setGoogleError("Missing Google credential.");
+        return;
       }
 
-      setIsBlocked(true);
-      setGoogleAuthed(false);
-      setGoogleUserId("");
-      setPinError("Account blocked. Please contact support.");
-      setGoogleError("Account blocked. Please contact support.");
-
-      await safeSignOut();
-      router.replace("/");
-    },
-    [db, hasFirebaseConfig, router, safeSignOut]
-  );
-
-  // ============================
-  // Google sign-in flow (GIS -> Firebase)
-  // ============================
-  const signInWithGoogleIdToken = useCallback(
-    async (idToken: string) => {
-      if (!auth) throw new Error("Firebase auth is not configured.");
-      const cred = GoogleAuthProvider.credential(idToken);
-      await signInWithCredential(auth, cred);
-    },
-    [auth]
-  );
-
-  const handleGoogleResponse = useCallback(
-    async (response: GoogleCredentialResponse) => {
-      try {
-        setGoogleError("");
-
-        const idToken = response?.credential;
-        if (!idToken) {
-          setGoogleError("Missing Google credential.");
-          return;
-        }
-
-        const userId = parseGoogleCredential(idToken);
-        const normalizedEmail = userId.toLowerCase();
-
-        if (!normalizedEmail) {
-          setGoogleError("Unable to read Google account email.");
-          setGoogleAuthed(false);
-          setGoogleUserId("");
-          return;
-        }
-
-        if (normalizedEmail !== ALLOWED_GOOGLE_EMAIL) {
-          setGoogleError("Not allowed.");
-          setGoogleAuthed(false);
-          setGoogleUserId("");
-          return;
-        }
-
-        // 1) Firebase sign-in first
-        await signInWithGoogleIdToken(idToken);
-
-        // 2) Wait for user materialize
-        const currentUser = await waitForUser();
-        if (!currentUser) {
-          setGoogleError("Unable to verify signed-in account.");
-          setGoogleAuthed(false);
-          setGoogleUserId("");
-          await safeSignOut();
-          return;
-        }
-
-        // 3) Check blocked after auth exists
-        const blocked = await checkBlockedUser(currentUser.uid, currentUser.email);
-        if (blocked) {
-          setIsBlocked(true);
-          setGoogleAuthed(false);
-          setGoogleUserId("");
-          setGoogleError("Account blocked. Please contact support.");
-          await safeSignOut();
-          return;
-        }
-
-        setIsBlocked(false);
-        setGoogleAuthed(true);
-        setGoogleUserId(currentUser.email || currentUser.uid);
-        setGoogleError("");
-      } catch (e: any) {
-        console.error("[AuthGate] Firebase sign-in failed:", e?.code, e?.message);
-        setGoogleError("Failed to sign in to Firebase.");
+      const userId = parseGoogleCredential(idToken);
+      const normalizedEmail = userId.toLowerCase();
+      if (!normalizedEmail) {
+        setGoogleError("Unable to read Google account email.");
         setGoogleAuthed(false);
         setGoogleUserId("");
+        return;
       }
-    },
-    [
-      ALLOWED_GOOGLE_EMAIL,
-      checkBlockedUser,
-      safeSignOut,
-      signInWithGoogleIdToken,
-      waitForUser,
-    ]
-  );
+      if (normalizedEmail !== ALLOWED_GOOGLE_EMAIL) {
+        setGoogleError(`Not allowed.`);
+        setGoogleAuthed(false);
+        setGoogleUserId("");
+        return;
+      }
 
-  // load Google SDK + render button
-  const clientId =
-    process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ??
-    "457209482063-s3q59rtck2dg6mcruuq2qbea1ee7ofe8.apps.googleusercontent.com";
+      await signInWithGoogleIdToken(idToken);
 
+      setGoogleUserId(userId || "Unknown user");
+      setGoogleAuthed(true);
+      setGoogleError("");
+    } catch (e: unknown) {
+      console.error("[AuthGate] Firebase sign-in failed:", e);
+      setGoogleError("Failed to sign in to Firebase.");
+      setGoogleAuthed(false);
+    }
+  }, []);
+
+  const verifyPin = useCallback(async () => {
+    setPinError("");
+    if (pinLocked) {
+      setPinError("Too many incorrect PIN attempts. Please contact support.");
+      return;
+    }
+    const normalized = pinInput.trim();
+
+    if (!normalized) {
+      setPinError("Enter the PIN to continue.");
+      return;
+    }
+
+    try {
+      const res = await fetch("/api/pin", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({pin: normalized}),
+      });
+      const data: unknown = await res.json().catch(() => ({}));
+      const msg =
+          typeof (data as { error?: unknown })?.error === "string"
+              ? (data as { error: string }).error
+              : "Invalid PIN.";
+
+      if (!res.ok) {
+        setPinVerified(false);
+        const nextAttempts = pinAttempts + 1;
+        setPinAttempts(nextAttempts);
+        setPinError(msg);
+        return;
+      }
+
+      setPinVerified(true);
+      setPinError("");
+      setPinAttempts(0);
+    } catch {
+      setPinVerified(false);
+      setPinError("Unable to reach /api/pin.");
+    }
+  }, [pinInput, pinAttempts, pinLocked]);
+
+
+  // load Google SDK
   useEffect(() => {
     if (!clientId) {
-      setGoogleError("Missing Google client_id.");
+      setGoogleError("Missing NEXT_PUBLIC_GOOGLE_CLIENT_ID.");
       return;
     }
 
@@ -341,8 +249,8 @@ export function useAuthGate(): UseAuthGateReturn {
       });
 
       window.google.accounts.id.renderButton(
-        document.getElementById("google-signin"),
-        { theme: "outline", size: "large", text: "continue_with" }
+          document.getElementById("google-signin"),
+          {theme: "outline", size: "large", text: "continue_with"}
       );
     };
 
@@ -360,127 +268,10 @@ export function useAuthGate(): UseAuthGateReturn {
     document.body.appendChild(script);
 
     return () => {
-      // avoid removing script if it was not added
-      try {
-        document.body.removeChild(script);
-      } catch {}
+      document.body.removeChild(script);
     };
   }, [clientId, handleGoogleResponse]);
 
-
-
-  const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-
-  const buildFirebaseAuthHeader = useCallback(async (): Promise<Record<string, string> | null> => {
-    const currentUser = await waitForUser();
-    if (!currentUser) return null;
-
-    for (let attempt = 0; attempt < 3; attempt += 1) {
-      try {
-        const token = await currentUser.getIdToken(true);
-        if (token) {
-          return { Authorization: `Bearer ${token}` };
-        }
-      } catch (error) {
-        if (attempt === 2) {
-          console.error("[AuthGate] Unable to create Firebase bearer token:", error);
-          return null;
-        }
-      }
-      await sleep(250);
-    }
-
-    return null;
-  }, [waitForUser]);
-
-  // ============================
-  // PIN verify
-  // ============================
-  const verifyPin = useCallback(async () => {
-    setPinError("");
-
-    if (isBlocked) {
-      setPinError("Account blocked. Please contact support.");
-      return;
-    }
-
-    if (pinLocked) {
-      setPinError("Too many incorrect PIN attempts. Please contact support.");
-      return;
-    }
-
-
-    if (!googleAuthed) {
-      setPinVerified(false);
-      setPinError("Sign in with Google first.");
-      return;
-    }
-
-    const normalized = pinInput.trim();
-    if (!normalized) {
-      setPinError("Enter the PIN to continue.");
-      return;
-    }
-
-    try {
-      const authHeader = await buildFirebaseAuthHeader();
-      if (!authHeader) {
-        setPinVerified(false);
-        setPinError("Unable to verify signed-in account.");
-        return;
-      }
-
-      const res = await fetch("/api/pin", {
-        method: "POST",
-        headers: { ...authHeader, "Content-Type": "application/json" },
-        body: JSON.stringify({ pin: normalized }),
-      });
-
-      const data: unknown = await res.json().catch(() => ({}));
-      const msg =
-        typeof (data as { error?: unknown })?.error === "string"
-          ? (data as { error: string }).error
-          : "Invalid PIN.";
-
-      if (!res.ok) {
-        setPinVerified(false);
-
-        const nextAttempts = pinAttempts + 1;
-        setPinAttempts(nextAttempts);
-        setPinError(msg);
-
-        if (nextAttempts >= MAX_PIN_ATTEMPTS) {
-          const currentUser = await waitForUser();
-          if (!currentUser) {
-            setPinError("Unable to verify signed-in account.");
-            return;
-          }
-          await blockUser(
-            currentUser.uid,
-            currentUser.email,
-            "PIN entered incorrectly 3 times."
-          );
-        }
-        return;
-      }
-
-      setPinVerified(true);
-      setPinError("");
-      setPinAttempts(0);
-    } catch {
-      setPinVerified(false);
-      setPinError("Unable to reach /api/pin.");
-    }
-  }, [
-    blockUser,
-    isBlocked,
-    pinAttempts,
-    pinInput,
-    pinLocked,
-    waitForUser,
-    buildFirebaseAuthHeader,
-    googleAuthed,
-  ]);
 
   return {
     googleAuthed,
@@ -495,6 +286,7 @@ export function useAuthGate(): UseAuthGateReturn {
     verifyPin,
     DEV_SESSION_TOKEN_CONTROL_KEY,
     TOKEN_KEY,
-    resetGate,
+    resetGate
   };
+
 }

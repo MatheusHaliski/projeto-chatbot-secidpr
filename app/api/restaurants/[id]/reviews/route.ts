@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { FieldValue } from "firebase-admin/firestore";
 
 import { getAdminFirestore } from "@/app/lib/firebaseAdmin";
-import { requireSession } from "@/app/lib/serverSession";
 import { parseRatingValue } from "@/app/gate/restaurantpagegate";
 
 export const runtime = "nodejs";
@@ -17,12 +16,7 @@ type ReviewPayload = {
 export async function POST(
   request: NextRequest,
   context: { params: Promise<{ id: string }> }
- ): Promise<Response> {
-  const session = requireSession(request);
-  if (!session) {
-    return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
-  }
-
+): Promise<Response> {
   const { id } = await context.params;
 
   if (!id) {
@@ -38,8 +32,8 @@ export async function POST(
 
   const ratingValue = parseRatingValue(body.rating ?? 0);
   const text = body.text?.trim() ?? "";
-  const userEmail = session.email;
-  const userDisplayName = session.email;
+  const userEmail = body.userEmail?.trim() ?? "";
+  const userDisplayName = body.userDisplayName?.trim() || userEmail || "Anonymous";
 
   if (!text) {
     return NextResponse.json(

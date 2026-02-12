@@ -9,7 +9,7 @@ import {
     setDevSessionToken,
 } from "@/app/lib/devSession";
 import { clearAuthSessionProfile, clearAuthSessionToken } from "@/app/lib/authSession";
-import { clearServerSession } from "@/app/lib/clientSession";
+import Script from "next/script";
 
 export default function DevAuthGate() {
     const {
@@ -32,11 +32,25 @@ export default function DevAuthGate() {
         if (pathname !== "/") return;
         resetGate();
         clearDevSessionToken();
-        void clearServerSession();
         clearAuthSessionToken();
         clearAuthSessionProfile();
     }, [pathname, resetGate]);
 
+    useEffect(() => {
+        if (typeof window === "undefined") return;
+
+        const g = (window as any).google;
+        if (!g?.accounts?.id) return; // script ainda não carregou
+
+        g.accounts.id.initialize({
+            client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID
+        });
+
+        g.accounts.id.renderButton(
+            document.getElementById("google-signin"),
+            { theme: "outline", size: "large", width: 320 }
+        );
+    }, []);
 
     useEffect(() => {
         if (!googleAuthed || !pinVerified) return;
@@ -46,6 +60,7 @@ export default function DevAuthGate() {
         }else{
             const token = crypto.randomUUID();
             setDevSessionToken(token);
+            const existing2 = getDevSessionToken();
         }
     }, [googleAuthed, pinVerified, router]);
 
@@ -92,7 +107,7 @@ export default function DevAuthGate() {
                         <button
                             type="button"
                             onClick={verifyPin}
-                            disabled={!googleAuthed || !pinInput.trim() || pinLocked}
+                            disabled={!pinInput.trim() || pinLocked}
                             className="w-full rounded-lg bg-black px-4 py-2 text-sm font-semibold text-white hover:bg-zinc-800 disabled:bg-zinc-400 dark:bg-zinc-50 dark:text-zinc-900"
                         >
                             Verify PIN
