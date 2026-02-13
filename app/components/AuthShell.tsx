@@ -37,6 +37,7 @@ export default function AuthShell({
           className={[
             "rounded-2xl px-4 py-3 w-fit bg-white text-amber-500",
             GLOW_LINE,
+            GLOW_BAR,
             "shadow-[0_18px_60px_rgba(0,0,0,0.25)]",
           ].join(" ")}
         >
@@ -64,6 +65,7 @@ export default function AuthShell({
           className={[
             "rounded-2xl px-4 py-3 w-fit bg-white text-amber-500",
             GLOW_LINE,
+            GLOW_BAR,
             "shadow-[0_18px_60px_rgba(0,0,0,0.25)]",
           ].join(" ")}
         >
@@ -93,6 +95,7 @@ export default function AuthShell({
             "rounded-3xl",
             GLOW_BAR,
             GLOW_LINE,
+            "border-amber-300 border-4",
             "bg-white bg-cover bg-center bg-no-repeat",
           ].join(" ")}
         >
@@ -110,10 +113,11 @@ export default function AuthShell({
               className={[
                 "rounded-2xl w-full bg-white text-amber-500 px-4 py-4 sm:px-8 sm:py-5",
                 GLOW_LINE,
+                "border-amber-300 border-4",
                 "shadow-[0_18px_60px_rgba(0,0,0,0.25)]",
               ].join(" ")}
             >
-              <div className="flex flex-col items-center justify-center gap-3">
+              <div className="flex border-amber-300 border-4 flex-col items-center justify-center gap-3">
                 <img
                   src="/1E8229A2-91F0-4EE7-A227-8B9CF14A4F2B.png"
                   alt="Friendly Eats"
