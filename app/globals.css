@@ -9,6 +9,13 @@
   --font-sharetech: var(--font-sharetech);
 }
 
+html,
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
@@ -28,7 +35,7 @@ body {
   background-color: #f4efe2;
   background-image:
     url("/bg-panel.png");
-  background-position: center;
+  background-position: 0 0;
   background-size: cover;
   background-repeat: no-repeat;
 }

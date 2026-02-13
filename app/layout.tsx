@@ -14,7 +14,7 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="en">
-        <body className={`${shareTechMono.variable} antialiased`}>
+        <body className={`${shareTechMono.variable} fe-form-material min-h-screen antialiased`}>
         {children}
         </body>
         </html>
