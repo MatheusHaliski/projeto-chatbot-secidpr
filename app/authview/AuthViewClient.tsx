@@ -10,7 +10,7 @@ import { getDevSessionToken, setDevSessionToken } from "@/app/lib/devSession";
 
 
 const createTopRightTexturePoints = () => {
-    const steps = 5;
+    const steps = 45;
     const points = [];
 
     for (let row = 0; row < steps; row += 1) {
