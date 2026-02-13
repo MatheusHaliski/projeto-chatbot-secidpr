@@ -513,6 +513,7 @@ export default function AuthShell({ title, subtitle, description, children }: Au
                         "rounded-3xl",
                         GLOW_BAR,
                         GLOW_LINE,
+                        "bg-[url('/bg-panel.png')]",
                     ].join(" ")}
                 >
 
