@@ -481,7 +481,7 @@ export function RestaurantCardsInner() {
     const userPhoto = authProfileLabel ? "" : getUserPhotoUrl(user);
 
     return (
-        <div className="relative min-h-screen bg-gradient-to-b bg-white text-black">
+        <div className="relative min-h-screen fe-fragmented-texture text-black">
             <div className="pointer-events-none absolute inset-0 opacity-80">
                 <div className="absolute -left-24 top-16 h-72 w-72 rounded-full bg-[#22c55e]/20 blur-[140px]" />
                 <div className="absolute left-1/2 top-32 h-80 w-80 -translate-x-1/2 rounded-full bg-[#38bdf8]/25 blur-[160px]" />
