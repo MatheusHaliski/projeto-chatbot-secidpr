@@ -35,8 +35,7 @@ body {
 .fe-form-material {
   background-color: #f4efe2;
   background-image:
-    linear-gradient(rgba(255, 255, 255, 0.86), rgba(255, 255, 255, 0.86)),
-    url("/bg-panel.png");
+    url("/bg-panel.png")
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
