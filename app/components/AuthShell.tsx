@@ -112,9 +112,6 @@ export default function AuthShell({ title, subtitle, description, children, extr
 
             </div>
 
-
-            </div>
-
             <main className="relative z-10 flex w-full items-center justify-center pt-24 sm:pt-28 lg:pt-32">
 
                 <div
