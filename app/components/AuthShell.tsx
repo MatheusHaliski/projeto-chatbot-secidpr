@@ -38,40 +38,11 @@ export default function AuthShell({ title, subtitle, description, children, extr
     return (
         <div
             className={[
-                "relative min-h-screen overflow-hidden",
-                 "bg-[url('/bg-panel-2.png')]",
+                "relative min-h-screen",
+                 "fe-form-material"
                 "px-4 py-10 sm:px-8",
             ].join(" ")}
         >
-
-            {/* ✅ Fundo: glow verde claro + glow amarelo claro (bem leve) */}
-            <div className="pointer-events-none absolute inset-0">
-                {/* “wash” branco suave (base) */}
-                <div className="absolute inset-0 bg-gradient-to-br from-amber-900 via-teal-600 to-orange-500" />
-
-                {/* glow verde claro (bem claro) */}
-                <div className="absolute -top-44 left-1/2 h-[720px] w-[720px] -translate-x-1/2 rounded-full
-                 bg-gradient-to-br from-yellow-200 via-teal-600 to-amber-900
-                  blur-[450px] opacity-80" />
-
-                <div className="absolute top-[18%] -left-56 h-[760px] w-[760px] rounded-full
-                 bg-orange-600
-                  blur-[170px] " />
-
-                {/* glow amarelo claro (bem claro) */}
-                <div className="absolute bottom-[4%] -right-60 h-[820px] w-[820px] rounded-full
-                  from-yellow-200 via-teal-600 to-amber-900
-                  blur-[180px] " />
-
-                <div className="absolute -bottom-[50%] left-[3%] h-[640px] w-[640px] rounded-full
-                  bg-[radial-gradient(rgba(254,240,138,0.25))]
-                  blur-[170px]" />
-
-                {/* textura de grid MUITO sutil */}
-                <div className="absolute inset-0 opacity-[0.05]
-                  [background-image:radial-gradient(circle_at_1px_1px,rgba(15,23,42,0.32)_1px,transparent_0)]
-                  [background-size:18px_18px]" />
-            </div>
 
             <div className="absolute left-16 top-6 z-20">
                 <div
