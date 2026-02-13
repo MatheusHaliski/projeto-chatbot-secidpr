@@ -505,28 +505,28 @@ export function RestaurantCardsInner() {
                 <img
                     src="/losangle-blue.svg"
                     alt=""
-                    className="absolute left-1/4 top-[35%] h-20 w-20 opacity-60 drop-shadow-[0_14px_26px_rgba(37,99,235,0.22)]"
+                    className="absolute left-[40%] top-[45%] h-20 w-20 opacity-60 drop-shadow-[0_14px_26px_rgba(37,99,235,0.22)]"
                 />
                 <img
                     src="/losangle-orange.svg"
                     alt=""
-                    className="absolute right-1/3 top-[42%] h-20 w-20 opacity-60 drop-shadow-[0_14px_26px_rgba(249,115,22,0.22)]"
+                    className="absolute  left-[40%] top-[40%] h-20 w-20 opacity-60 drop-shadow-[0_14px_26px_rgba(249,115,22,0.22)]"
                 />
 
                 <img
                     src="/star-gradient.svg"
                     alt=""
-                    className="absolute left-[45%] top-[38%] h-16 w-16 opacity-75"
+                    className="absolute l left-[40%] top-[47%] h-16 w-16 opacity-75"
                 />
                 <img
                     src="/star-orange.svg"
                     alt=""
-                    className="absolute right-[48%] top-[48%] h-14 w-14 opacity-70"
+                    className="absolute  left-[60%] top-[65%] h-14 w-14 opacity-70"
                 />
                 <img
                     src="/star-orange.svg"
                     alt=""
-                    className="absolute right-[40%] top-[58%] h-14 w-14 opacity-70"
+                    className="absolute  left-[70%] top-[75%] h-14 w-14 opacity-70"
                 />
                 <img
                     src="/star-orange.svg"
