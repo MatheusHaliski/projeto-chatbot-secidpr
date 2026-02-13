@@ -43,7 +43,7 @@ export default function AuthShell({
           <div className="flex items-center gap-4">
             <img
               src="/1E8229A2-91F0-4EE7-A227-8B9CF14A4F2B.png"
-              alt="Friendly Eats"
+              alt="DineExplorer"
               className="h-12 sm:h-14 w-auto object-contain"
             />
             <div className="hidden sm:block font-sharetech leading-tight">
@@ -127,7 +127,7 @@ export default function AuthShell({
 
                 <div className="hidden sm:block font-sharetech leading-tight">
                   <div className="text-base sm:text-lg md:text-xl font-semibold tracking-[0.22em] text-orange-500 uppercase text-center">
-                    Connecting you to places that matter
+                    Find your favorite places at a glance.
                   </div>
                 </div>
               </div>
