@@ -603,6 +603,18 @@ export function RestaurantCardsInner() {
                     alt=""
                     className="absolute right-4 bottom-14 h-10 w-10 opacity-70"
                 />
+                  {/* ✅ add-ons: +10 pipas */}
+                <img src="/pipa.png" alt="" className="absolute right-[50%] top-[50%]  h-12 w-12 opacity-65 drop-shadow-[0_18px_40px_rgba(0,0,0,0.14)] rotate-[18deg]" />
+                <img src="/pipa.png" alt="" className="absolute right-[50%] top-[40%]  h-12 w-12 opacity-65 drop-shadow-[0_18px_40px_rgba(0,0,0,0.14)] rotate-[18deg]" />
+                <img src="/pipa.png" alt="" className="absolute right-[40%] top-[44%]  h-10 w-10 opacity-55 drop-shadow-[0_18px_40px_rgba(0,0,0,0.12)] -rotate-[24deg]" />
+                <img src="/pipa.png" alt="" className="absolute left-[30%] top-[18%]  h-9  w-9  opacity-60 drop-shadow-[0_18px_40px_rgba(0,0,0,0.12)] rotate-[32deg]" />
+                <img src="/pipa.png" alt="" className="absolute left-[20%] top-[40%]  h-12 w-12 opacity-50 drop-shadow-[0_18px_40px_rgba(0,0,0,0.12)] -rotate-[10deg]" />
+                <img src="/pipa.png" alt="" className="absolute left-[40%] top-[28%]  h-10 w-10 opacity-60 drop-shadow-[0_18px_40px_rgba(0,0,0,0.12)] rotate-[46deg]" />
+                <img src="/pipa.png" alt="" className="absolute left-[20%] bottom-[12%] h-12 w-12 opacity-50 drop-shadow-[0_18px_40px_rgba(0,0,0,0.12)] -rotate-[38deg]" />
+                <img src="/pipa.png" alt="" className="absolute right-[40%] top-[54%] h-10 w-10 opacity-60 drop-shadow-[0_18px_40px_rgba(0,0,0,0.12)] rotate-[14deg]" />
+                <img src="/pipa.png" alt="" className="absolute right-[20%] top-[10%] h-12 w-12 opacity-55 drop-shadow-[0_18px_40px_rgba(0,0,0,0.12)] -rotate-[20deg]" />
+                <img src="/pipa.png" alt="" className="absolute right-[60%] bottom-[18%] h-10 w-10 opacity-60 drop-shadow-[0_18px_40px_rgba(0,0,0,0.12)] rotate-[28deg]" />
+                <img src="/pipa.png" alt="" className="absolute right-[80%]  top-[42%]  h-12 w-12 opacity-50 drop-shadow-[0_18px_40px_rgba(0,0,0,0.12)] -rotate-[52deg]" />
             </div>
 
 
