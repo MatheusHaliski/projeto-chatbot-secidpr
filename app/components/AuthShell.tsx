@@ -39,7 +39,7 @@ export default function AuthShell({ title, subtitle, description, children, extr
         <div
             className={[
                 "relative min-h-screen overflow-hidden",
-                "bg-transparent",
+                 "bg-[url('/bg-panel-2.png')]",
                 "px-4 py-10 sm:px-8",
             ].join(" ")}
         >
