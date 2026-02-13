@@ -568,7 +568,7 @@ export default function AuthShell({ title, subtitle, description, children, extr
                             "space-y-4",
                             "rounded-3xl",
                             "border-amber-300 border-8", // ✅ requested
-                             "bg-[url('/bg-panel.png')]",
+                             "bg-white",
                             "p-6 sm:p-8",
                             "shadow-[0_20px_50px_rgba(0,0,0,0.35)]",
                         ].join(" ")}>
