@@ -42,7 +42,7 @@ export default function AuthShell({
         >
           <div className="flex items-center gap-4">
             <img
-              src="/A1BCBA00-AE79-42DB-A9F9-E4633086EF24.pngg"
+              src="/A1BCBA00-AE79-42DB-A9F9-E4633086EF24.png"
               alt="DineExplorer"
               className="h-12 sm:h-14 w-auto object-contain"
             />
