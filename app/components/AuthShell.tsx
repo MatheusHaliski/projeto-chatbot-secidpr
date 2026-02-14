@@ -148,12 +148,12 @@ export default function AuthShell({
                 {title}
               </p>
 
-              <h1 className="text-3xl font-semibold text-orange-600">
+              <h1 className="text-3xl font-semibold uppercase text-orange-600">
                 {subtitle}
               </h1>
 
               {description ? (
-                <p className="text-lg sm:text-xl font-medium text-orange-600 leading-relaxed">
+                <p className="text-lg sm:text-xl font-medium uppercase text-orange-600 leading-relaxed">
                   {description}
                 </p>
               ) : null}
