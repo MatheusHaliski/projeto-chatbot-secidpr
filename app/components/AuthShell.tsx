@@ -32,10 +32,10 @@ export default function AuthShell({
       ) : null}
 
       {/* Left badge */}
-      <div className="absolute left-4 sm:left-10 lg:left-16 top-6 z-20">
+      <div className="absolute left-4 top-6 z-20 sm:left-10 lg:left-16">
         <div
           className={[
-            "rounded-2xl px-4 py-3 w-fit border-4 border-yellow-100 bg-white text-amber-500",
+            "w-fit rounded-2xl border-4 border-yellow-100 bg-white px-4 py-3 text-amber-500",
             GLOW_LINE,
             "shadow-[0_18px_60px_rgba(0,0,0,0.25)]",
           ].join(" ")}
@@ -44,11 +44,9 @@ export default function AuthShell({
             <img
               src="/A1BCBA00-AE79-42DB-A9F9-E4633086EF24.png"
               alt="DineExplorer"
-              className={["h-12 sm:h-14 w-auto object-contain",
-            "h-44 sm:h-42 md:h-46 lg:h-48"
-            ].join(" ")}
+              className="h-12 w-auto object-contain sm:h-14"
             />
-            <div className="hidden sm:block font-sharetech leading-tight">
+            <div className="hidden font-sharetech leading-tight sm:block">
               <div className="text-sm font-semibold text-amber-500">
                 {/* opcional: tagline curta */}
               </div>
@@ -58,10 +56,10 @@ export default function AuthShell({
       </div>
 
       {/* Right badge */}
-      <div className="absolute right-4 sm:right-10 lg:right-16 top-6 z-20">
+      <div className="absolute right-4 top-6 z-20 sm:right-10 lg:right-16">
         <div
           className={[
-            "rounded-2xl px-4 py-3 w-fit  border-4 border-yellow-100 bg-white text-amber-500",
+            "w-fit rounded-2xl border-4 border-yellow-100 bg-white px-4 py-3 text-amber-500",
             GLOW_LINE,
             "shadow-[0_18px_60px_rgba(0,0,0,0.25)]",
           ].join(" ")}
@@ -70,11 +68,11 @@ export default function AuthShell({
             <img
               src="/VI.jpeg"
               alt="Velion"
-              className={["h-12 sm:h-14 w-auto object-contain",
-            "h-44 sm:h-42 md:h-46 lg:h-48"
-                  ].join(" ")}
+              className="h-12 w-auto object-contain sm:h-14"
             />
-            <div className="hidden sm:block font-sharetech leading-tight">
+            <div className="hidden font-sharetech leading-tight sm:block">
+              {/* opcional: texto do badge direito */}
+            </div>
           </div>
         </div>
       </div>
@@ -103,7 +101,7 @@ export default function AuthShell({
             {/* Header block */}
             <div
               className={[
-                "rounded-2xl w-full bg-white text-amber-500 px-4 py-4 sm:px-8 sm:py-5",
+                "w-full rounded-2xl bg-white px-4 py-4 text-amber-500 sm:px-8 sm:py-5",
                 GLOW_LINE,
                 "border-amber-300 border-4",
                 "shadow-[0_18px_60px_rgba(0,0,0,0.25)]",
@@ -113,14 +111,11 @@ export default function AuthShell({
                 <img
                   src="/A1BCBA00-AE79-42DB-A9F9-E4633086EF24.png"
                   alt="DineExplorer"
-                  className={[
-                    "w-full max-w-[720px] object-contain",
-                    "h-64 sm:h-62 md:h-66 lg:h-68",
-                  ].join(" ")}
+                  className="h-64 w-full max-w-[720px] object-contain sm:h-62 md:h-66 lg:h-68"
                 />
 
-                <div className="hidden sm:block font-sharetech leading-tight">
-                  <div className="text-base sm:text-lg md:text-xl font-semibold tracking-[0.22em] text-orange-500 uppercase text-center">
+                <div className="hidden font-sharetech leading-tight sm:block">
+                  <div className="text-center text-base font-semibold uppercase tracking-[0.22em] text-orange-500 sm:text-lg md:text-xl">
                     Find your favorite places at a glance.
                   </div>
                 </div>
@@ -130,11 +125,11 @@ export default function AuthShell({
             {/* Title card */}
             <div
               className={[
-                "space-y-4 rounded-3xl p-6 sm:p-8 bg-white shadow-[0_20px_50px_rgba(0,0,0,0.35)]",
+                "space-y-4 rounded-3xl bg-white p-6 shadow-[0_20px_50px_rgba(0,0,0,0.35)] sm:p-8",
                 "border-amber-300 border-8",
               ].join(" ")}
             >
-              <p className="text-xs font-semibold font-sharetech uppercase tracking-[0.35em] text-orange-600">
+              <p className="font-sharetech text-xs font-semibold uppercase tracking-[0.35em] text-orange-600">
                 {title}
               </p>
 
@@ -143,7 +138,7 @@ export default function AuthShell({
               </h1>
 
               {description ? (
-                <p className="text-lg sm:text-xl font-medium uppercase text-orange-600 leading-relaxed">
+                <p className="text-lg font-medium uppercase leading-relaxed text-orange-600 sm:text-xl">
                   {description}
                 </p>
               ) : null}
