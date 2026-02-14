@@ -121,7 +121,7 @@ export default function AuthShell({
                   alt="DineExplorer"
                   className={[
                     "w-full max-w-[720px] object-contain",
-                    "h-44 sm:h-42 md:h-46 lg:h-48",
+                    "h-64 sm:h-62 md:h-66 lg:h-68",
                   ].join(" ")}
                 />
 
