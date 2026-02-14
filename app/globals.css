@@ -26,7 +26,7 @@ body {
   background-color: #f8f6ef;
   background-image:
    url("/bg-panel-2.png");
-  background-size: 3720px 3720px, 3700px 3700px, 3890px 3790px, 3760px 3760px, 3790px 3790px;
+  background-size: 720px 720px, 700px 700px, 890px 790px, 760px 760px, 790px 790px;
   background-position: 0 0, 38px 16px, 74px -30px, -45px 60px, 0 0;
 }
 
@@ -34,7 +34,7 @@ body {
 .fe-form-material {
   background-color: #f4efe2;
   background-image:
-    url("/bg-panel.png");
+    url("/bg-panel-2.png");
   background-position: 0 0;
   background-size: cover;
   background-repeat: no-repeat;
