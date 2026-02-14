@@ -36,6 +36,7 @@ export default function AuthShell({
         <div
           className={[
             "rounded-2xl px-4 py-3 w-fit border-4 border-yellow-100 bg-white text-amber-500",
+            "h-44 sm:h-42 md:h-46 lg:h-48",
             GLOW_LINE,
             "shadow-[0_18px_60px_rgba(0,0,0,0.25)]",
           ].join(" ")}
@@ -63,6 +64,7 @@ export default function AuthShell({
         <div
           className={[
             "rounded-2xl px-4 py-3 w-fit  border-4 border-yellow-100 bg-white text-amber-500",
+            "h-44 sm:h-42 md:h-46 lg:h-48",
             GLOW_LINE,
             "shadow-[0_18px_60px_rgba(0,0,0,0.25)]",
           ].join(" ")}
