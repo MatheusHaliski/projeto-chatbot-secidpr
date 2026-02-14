@@ -78,13 +78,6 @@ export default function AuthShell({
                   ].join(" ")}
             />
             <div className="hidden sm:block font-sharetech leading-tight">
-              <div className="text-xs font-semibold tracking-[0.22em] text-amber-500 uppercase">
-                Velion
-              </div>
-              <div className="text-sm font-semibold text-amber-500">
-                Velion Infyra Technology Platforms, Inc.
-              </div>
-            </div>
           </div>
         </div>
       </div>
