@@ -36,7 +36,6 @@ export default function AuthShell({
         <div
           className={[
             "rounded-2xl px-4 py-3 w-fit border-4 border-yellow-100 bg-white text-amber-500",
-            "h-44 sm:h-42 md:h-46 lg:h-48",
             GLOW_LINE,
             "shadow-[0_18px_60px_rgba(0,0,0,0.25)]",
           ].join(" ")}
@@ -45,7 +44,9 @@ export default function AuthShell({
             <img
               src="/A1BCBA00-AE79-42DB-A9F9-E4633086EF24.png"
               alt="DineExplorer"
-              className="h-12 sm:h-14 w-auto object-contain"
+              className={["h-12 sm:h-14 w-auto object-contain",
+            "h-44 sm:h-42 md:h-46 lg:h-48"
+            ].join(" ")}
             />
             <div className="hidden sm:block font-sharetech leading-tight">
               <div className="text-xs font-semibold tracking-[0.22em] text-orange-600 uppercase">
@@ -64,7 +65,6 @@ export default function AuthShell({
         <div
           className={[
             "rounded-2xl px-4 py-3 w-fit  border-4 border-yellow-100 bg-white text-amber-500",
-            "h-44 sm:h-42 md:h-46 lg:h-48",
             GLOW_LINE,
             "shadow-[0_18px_60px_rgba(0,0,0,0.25)]",
           ].join(" ")}
@@ -73,7 +73,9 @@ export default function AuthShell({
             <img
               src="/VI.jpeg"
               alt="Velion"
-              className="h-12 sm:h-14 w-auto object-contain"
+              className={["h-12 sm:h-14 w-auto object-contain",
+            "h-44 sm:h-42 md:h-46 lg:h-48"
+                  ].join(" ")}
             />
             <div className="hidden sm:block font-sharetech leading-tight">
               <div className="text-xs font-semibold tracking-[0.22em] text-amber-500 uppercase">
