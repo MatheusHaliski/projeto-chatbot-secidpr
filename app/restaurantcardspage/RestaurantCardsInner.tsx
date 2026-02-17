@@ -536,7 +536,7 @@ export function RestaurantCardsInner() {
                     ].join(" ")}>
                         <div className="flex items-center gap-4">
                             <img
-                                src="/8F897497-4F06-4D51-8537-1FEF8E0386E1.png"
+                                src="/1E8AEB0C-78BC-42FD-9113-73F1A0728A3A_1_105_c.jpeg"
                                 alt="Velion Infyra Technology Platforms, Inc."
                                 className="h-14 w-auto"
                             />
