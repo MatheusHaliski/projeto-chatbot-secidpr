@@ -40,7 +40,7 @@ export default function SignupViewPage() {
     ].join(" ")}
             >
                 <p className="text-xs font-semibold uppercase tracking-[0.35em] text-orange-600">
-                    Start your Velion Social journey
+                    Start your Dine Explorer journey
                 </p>
                 <h1 className="mt-3 text-3xl font-semibold text-orange-600">
                     Build your new account
