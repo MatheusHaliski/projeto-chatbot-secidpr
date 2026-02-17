@@ -118,7 +118,7 @@ export function RestaurantCardsInner() {
     const [city, setCity] = useState("");
     const [category, setCategory] = useState("");
 
-    const pageBackgroundStyle = useMemo<CSSProperties | undefined>(() => {
+const pageBackgroundStyle = useMemo<CSSProperties | undefined>(() => {
         const selectedCategory = category.trim().toLowerCase();
 
         if (selectedCategory === "japanese") {
@@ -132,12 +132,13 @@ export function RestaurantCardsInner() {
 
         if (selectedCategory === "bakery/cafe") {
             return {
-                backgroundImage: 'url("/8BDC5E16-EBA8-4B48-9646-1C85F71587B6.png")',
+                backgroundImage: 'url("/fallbackcafe.png")',
                 backgroundPosition: "left top",
                 backgroundRepeat: "repeat",
                 backgroundSize: "260px 200px",
             };
         }
+
         if (selectedCategory === "fast food") {
             return {
                 backgroundImage: 'url("/fastfoodbg.png")',
@@ -146,10 +147,9 @@ export function RestaurantCardsInner() {
                 backgroundSize: "240px 180px",
             };
         }
-      
 
         return undefined;
-          }
+    }, [category]);
     }, [category]);
     const [starsFilter, setStarsFilter] = useState("");
     const catalogById = useMemo(() => {
