@@ -137,7 +137,7 @@ export function RestaurantCardsInner() {
                 backgroundRepeat: "repeat",
                 backgroundSize: "260px 200px",
             };
-        if (selectedCategory === "fast food") {
+        if (selectedCategory === "Fast Food") {
             return {
                 backgroundImage: 'url("/fastfoodbg.png")',
                 backgroundPosition: "left top",
