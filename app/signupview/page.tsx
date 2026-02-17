@@ -6,7 +6,7 @@ import SignupForm from "./SignupForm";
 export default function SignupViewPage() {
     return (
         <AuthShell
-            title="Start your Velion Social journey"
+            title="Start your Dine Explorer journey"
             subtitle="Create your account in minutes"
         >
             <div
