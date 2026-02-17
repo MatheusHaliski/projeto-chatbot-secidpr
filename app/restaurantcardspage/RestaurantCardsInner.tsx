@@ -124,18 +124,18 @@ export function RestaurantCardsInner() {
         if (selectedCategory === "japanese") {
             return {
                 backgroundImage: 'url("/friendly-eats-japan.png")',
-                backgroundPosition: "center",
-                backgroundRepeat: "no-repeat",
-                backgroundSize: "cover",
+                backgroundPosition: "left top",
+                backgroundRepeat: "repeat",
+                backgroundSize: "220px 220px",
             };
         }
 
         if (selectedCategory === "bakery/cafe") {
             return {
                 backgroundImage: 'url("/fallbackcafe.png")',
-                backgroundPosition: "center",
-                backgroundRepeat: "no-repeat",
-                backgroundSize: "cover",
+                backgroundPosition: "left top",
+                backgroundRepeat: "repeat",
+                backgroundSize: "260px 200px",
             };
         }
 
