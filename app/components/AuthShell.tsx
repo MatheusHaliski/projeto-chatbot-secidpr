@@ -124,16 +124,16 @@ export default function AuthShell({
                 "border-amber-300 border-8",
               ].join(" ")}
             >
-              <p className="font-sharetech text-xs font-semibold uppercase tracking-[0.35em] text-orange-600">
+              <p className="text-center text-base font-semibold uppercase tracking-[0.22em] text-orange-500 sm:text-lg md:text-xl">
                 {title}
               </p>
 
-              <h1 className="text-3xl font-semibold uppercase text-orange-600">
+              <h1 className="text-center text-base font-semibold uppercase tracking-[0.22em] text-orange-500 sm:text-lg md:text-xl">
                 {subtitle}
               </h1>
 
               {description ? (
-                <p className="text-lg font-medium uppercase leading-relaxed text-orange-600 sm:text-xl">
+                <p className="text-center text-base font-semibold uppercase tracking-[0.22em] text-orange-500 sm:text-lg md:text-xl">
                   {description}
                 </p>
               ) : null}
