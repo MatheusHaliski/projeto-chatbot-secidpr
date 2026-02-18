@@ -76,7 +76,7 @@ export default function SignupViewPage() {
             description="Enter the email connected to your Social Media account. We will send a secure link to redefine your password."
         >
 
-            <div className="flex flex-col bg-white border-8 rounded-2xl border-orange-400 items-center gap-4 pt-8">
+            <div className="flex flex-col mb-20 bg-white border-8 rounded-2xl border-orange-400 items-center gap-4 pt-8">
                 <form className="-translate-x-10 space-y-8 text-base mt-10" onSubmit={handleSubmit}>
                     <label className="block text-xl font-semibold text-orange-600 leading-tight">
                         Email address
