@@ -23,7 +23,7 @@ export default function AuthShell2({
   extraDecorations,
 }: AuthShellProps) {
   return (
-    <div className="relative min-h-screen fe-fragmented-texture px-4 py-10 sm:px-8">
+    <div className="relative min-h-screen fe-form-material px-4 py-10 sm:px-8">
       {/* Optional decorations behind everything */}
       {extraDecorations ? (
         <div className="pointer-events-none absolute inset-0 z-0">
