@@ -120,7 +120,7 @@ export default function AuthShell({
                 <div className="w-full">
                   <div className="overflow-hidden rounded-2xl border-4 border-amber-300 shadow-[0_18px_60px_rgba(0,0,0,0.25)]">
                     <img
-                      src="/6B7E76C2-291B-4D8A-B006-CA5C6FFDE516.png"
+                      src="/25693596-1F6A-4249-8976-795AD4CE7E25.png"
                       alt="Dine Explorer featured visual"
                       className="h-full w-full object-cover"
                     />
