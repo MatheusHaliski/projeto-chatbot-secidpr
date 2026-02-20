@@ -186,7 +186,7 @@ const pageBackgroundStyle = useMemo<CSSProperties | undefined>(() => {
         }
      if (selectedCategory === "arabic") {
             return {
-                backgroundImage: 'url("/public/D03D8233-DBB7-43DD-8590-986225967093.png")',
+                backgroundImage: 'url("/D03D8233-DBB7-43DD-8590-986225967093.png")',
                 backgroundPosition: "left top",
                 backgroundRepeat: "repeat",
                 backgroundSize: "220px 220px",
