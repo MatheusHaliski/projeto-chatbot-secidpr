@@ -27,8 +27,8 @@ body {
   background-image:
    url("/40B2DBFA-7211-45CC-8A4E-9B79AF0C81CA.png");
   background-position: 0 0;
-  background-size: cover;
-  background-repeat: no-repeat;
+  background-size: 10px 10px;
+  background-repeat: repeat;
 }
 
 
@@ -37,8 +37,8 @@ body {
   background-image:
     url("/40B2DBFA-7211-45CC-8A4E-9B79AF0C81CA.png");
   background-position: 0 0;
-  background-size: cover;
-  background-repeat: no-repeat;
+  background-size: 10px 10px;
+  background-repeat: repeat;
 }
 
 .fe-glass-panel {
