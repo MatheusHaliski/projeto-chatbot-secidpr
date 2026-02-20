@@ -123,7 +123,7 @@ const pageBackgroundStyle = useMemo<CSSProperties | undefined>(() => {
 
         if (selectedCategory === "japanese") {
             return {
-                backgroundImage: 'url("/1160F997-E55C-43E5-9853-1CB2ADA0B5E4.png")',
+                backgroundImage: 'url("/9BE60003-166D-4946-AA7D-18A1B1F5827D.png")',
                 backgroundPosition: "left top",
                 backgroundRepeat: "repeat",
                 backgroundSize: "220px 220px",
