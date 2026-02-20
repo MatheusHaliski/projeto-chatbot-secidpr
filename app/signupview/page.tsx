@@ -21,7 +21,7 @@ export default function SignupViewPage() {
                 ].join(" ")}
             >
                  <Image
-                    src="/25693596-1F6A-4249-8976-795AD4CE7E25.png"
+                    src="/4D13F57F-2101-40AC-888C-D2DF836E3286.png"
                     alt="Welcome image for newcomers"
                     width={1024}
                     height={1024}
