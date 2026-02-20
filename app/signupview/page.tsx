@@ -1,11 +1,11 @@
 "use client";
 import Image from "next/image";
-import AuthShell from "../components/AuthShell";
+import AuthShell from "../components/AuthShell2";
 import SignupForm from "./SignupForm";
 
 export default function SignupViewPage() {
     return (
-        <AuthShell
+        <AuthShell2
             title="Start your Dine Explorer journey"
             subtitle="Create your account in minutes"
         >
