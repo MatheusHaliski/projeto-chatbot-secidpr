@@ -157,6 +157,15 @@ const pageBackgroundStyle = useMemo<CSSProperties | undefined>(() => {
             };
             
         }
+      if (selectedCategory === "pizza/italian") {
+            return {
+                backgroundImage: 'url("/30CDB1E0-5AEF-495A-A02A-4280DB2EF1DD.png")',
+                backgroundPosition: "left top",
+                backgroundRepeat: "repeat",
+                backgroundSize: "220px 220px",
+            };
+            
+        }
         return undefined;
     }, [category]);
     
