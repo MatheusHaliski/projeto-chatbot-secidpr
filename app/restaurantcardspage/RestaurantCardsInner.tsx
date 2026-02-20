@@ -146,8 +146,17 @@ const pageBackgroundStyle = useMemo<CSSProperties | undefined>(() => {
                 backgroundRepeat: "repeat",
                 backgroundSize: "220px 220px",
             };
+            
         }
-
+     if (selectedCategory === "desserts") {
+            return {
+                backgroundImage: 'url("/C5AB81FF-6742-416E-8B24-C71AB90F52A6.png")',
+                backgroundPosition: "left top",
+                backgroundRepeat: "repeat",
+                backgroundSize: "220px 220px",
+            };
+            
+        }
         return undefined;
     }, [category]);
     
