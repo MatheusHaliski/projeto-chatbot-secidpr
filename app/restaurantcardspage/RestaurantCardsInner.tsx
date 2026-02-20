@@ -132,7 +132,7 @@ const pageBackgroundStyle = useMemo<CSSProperties | undefined>(() => {
 
         if (selectedCategory === "bakery/cafe") {
             return {
-                backgroundImage: 'url("/2902FD13-1FA7-44AC-9039-873DE7C6EB78.png")',
+                backgroundImage: 'url("/1160F997-E55C-43E5-9853-1CB2ADA0B5E4.png")',
                 backgroundPosition: "left top",
                 backgroundRepeat: "repeat",
                 backgroundSize: "220px 220px",
