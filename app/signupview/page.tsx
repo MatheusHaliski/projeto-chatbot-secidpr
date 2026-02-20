@@ -9,26 +9,6 @@ export default function SignupViewPage() {
             title="Start your Dine Explorer journey"
             subtitle="Create your account in minutes"
         >
-            <div
-                className={[
-                    "space-y-4",
-                    "rounded-3xl",
-                    "border-8 border-orange-500",
-                    "bg-white/45",
-                    "fe-glass-panel",
-                    "p-4 sm:p-6",
-                    "shadow-[0_20px_50px_rgba(0,0,0,0.35)]",
-                ].join(" ")}
-            >
-                 <Image
-                    src="/4D13F57F-2101-40AC-888C-D2DF836E3286.png"
-                    alt="Welcome image for newcomers"
-                    width={1024}
-                    height={1024}
-                    className="h-auto w-full rounded-2xl"
-                    priority
-                />
-            </div>
 
             <div
                 className={[
