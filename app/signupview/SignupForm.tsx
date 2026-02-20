@@ -130,7 +130,7 @@ export default function SignupForm() {
         <Form {...form}>
             <form
                 onSubmit={form.handleSubmit(handleSubmit, handleInvalid)}
-                className="space-y-5"
+                className="space-y-5 fe-glass-panel rounded-3xl border border-white/40 p-5 sm:p-6"
             >
                 <FormField
                     control={form.control}

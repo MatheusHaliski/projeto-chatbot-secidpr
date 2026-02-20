@@ -40,6 +40,14 @@ body {
   background-repeat: no-repeat;
 }
 
+.fe-glass-panel {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.32), rgba(255, 255, 255, 0.12));
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.42);
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.25);
+}
+
 .vs-auth-alert-popup {
   background: #f0f0f0;
   border: 2px solid #facc15;

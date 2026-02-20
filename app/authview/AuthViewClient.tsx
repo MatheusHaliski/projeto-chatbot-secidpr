@@ -109,6 +109,7 @@ export default function AuthViewClient() {
                     "mt-16",
                     "border-amber-300 border-8",
                     "fe-form-material",
+                    "fe-glass-panel",
                     "px-6 pb-8 pt-10 sm:px-8 sm:pb-8 sm:pt-12",
                     "shadow-[0_20px_50px_rgba(0,0,0,0.35)]",
                 ].join(" ")}
@@ -117,7 +118,8 @@ export default function AuthViewClient() {
                     "space-y-6",
                     "rounded-3xl",
                     "border-amber-300 border-8",
-                    "bg-white",
+                    "bg-white/55",
+                    "fe-glass-panel",
                     "p-6 sm:p-8",
                     "shadow-[0_20px_50px_rgba(0,0,0,0.35)]",
                 ].join(" ")}>

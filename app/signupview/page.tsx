@@ -14,13 +14,14 @@ export default function SignupViewPage() {
                     "space-y-4",
                     "rounded-3xl",
                     "border-8 border-orange-500",
-                    "bg-white",
+                    "bg-white/45",
+                    "fe-glass-panel",
                     "p-4 sm:p-6",
                     "shadow-[0_20px_50px_rgba(0,0,0,0.35)]",
                 ].join(" ")}
             >
                  <Image
-                    src="/D86E2BA3-4DB2-4A28-8363-5B1B0AA55F31.png"
+                    src="/25693596-1F6A-4249-8976-795AD4CE7E25.png"
                     alt="Welcome image for newcomers"
                     width={1024}
                     height={1024}
@@ -34,7 +35,8 @@ export default function SignupViewPage() {
                     "space-y-4",
                     "rounded-3xl",
                     "border-amber-300 border-8", // ✅ requested
-                    "bg-white",
+                    "bg-white/45",
+                    "fe-glass-panel",
                     "p-6 sm:p-8",
                     "shadow-[0_20px_50px_rgba(0,0,0,0.35)]",
     ].join(" ")}
