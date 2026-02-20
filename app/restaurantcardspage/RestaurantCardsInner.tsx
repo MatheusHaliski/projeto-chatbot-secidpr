@@ -559,6 +559,60 @@ const pageBackgroundStyle = useMemo<CSSProperties | undefined>(() => {
     const userLabel = authProfileLabel || getUserLabel(user, "Guest");
     const userPhoto = authProfileLabel ? "" : getUserPhotoUrl(user);
 
+    const renderPaginationNavbar = (extraClassName = "") => {
+        if (loading || error || filteredIds.length === 0) {
+            return null;
+        }
+
+        return (
+            <div
+                className={[
+                    "relative flex flex-wrap items-center justify-between gap-4 px-6 py-5",
+                    "rounded-3xl",
+                    GLOW_BAR,
+                    "bg-emerald-500/20",
+                    "border border-emerald-400",
+                    GLOW_LINE,
+                    extraClassName,
+                ].join(" ")}
+            >
+                <div>
+                    Showing{" "}
+                    <span className="font-semibold text-white">{(currentPage - 1) * pageSize + 1}</span> -{" "}
+                    <span className="font-semibold text-white">
+                        {Math.min(currentPage * pageSize, filteredIds.length)}
+                    </span>{" "}
+                    of <span className="font-semibold text-white">{filteredIds.length}</span> restaurants
+                </div>
+
+                <div className="flex items-center gap-2">
+                    <button
+                        type="button"
+                        onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
+                        disabled={currentPage === 1}
+                        className="h-10 rounded-xl border border-white/25 bg-white/10 px-4 text-xs font-semibold text-white disabled:cursor-not-allowed disabled:opacity-40"
+                    >
+                        Previous
+                    </button>
+
+                    <span className="text-xs text-white/70">
+                        Page <span className="font-semibold text-white">{currentPage}</span> of{" "}
+                        <span className="font-semibold text-white">{totalPages}</span>
+                    </span>
+
+                    <button
+                        type="button"
+                        onClick={handleNextPage}
+                        disabled={currentPage === totalPages}
+                        className="h-10 rounded-xl border border-white/25 bg-white/10 px-4 text-xs font-semibold text-white disabled:cursor-not-allowed disabled:opacity-40"
+                    >
+                        {loadingMore ? "Loading…" : "Next"}
+                    </button>
+                </div>
+            </div>
+        );
+    };
+
     return (
         <div className="relative min-h-screen fe-fragmented-texture text-black" style={pageBackgroundStyle}>
             <div className="pointer-events-none absolute inset-0 opacity-80">
@@ -777,6 +831,8 @@ const pageBackgroundStyle = useMemo<CSSProperties | undefined>(() => {
                 </header>
 
                 <section className="mt-4 m-3.5 min-w-2xl">
+                    {renderPaginationNavbar("mb-5")}
+
                     {!loading && error ? (
                         <p className="whitespace-pre-wrap rounded-2xl border border-red-400/25 bg-red-500/10 px-4 py-3 text-sm font-semibold text-red-200 backdrop-blur-2xl">
                             {error}
@@ -921,58 +977,7 @@ const pageBackgroundStyle = useMemo<CSSProperties | undefined>(() => {
                         })}
                     </div>
 
-                    {!loading && !error && filteredIds.length > 0 ? (
-                        <div    className={[
-                            "relative flex flex-wrap items-center justify-between gap-4 px-6 py-5",
-                            "rounded-3xl",
-                            GLOW_BAR,
-                            "bg-emerald-500/20",
-                            "border border-emerald-400",
-                            GLOW_LINE,
-                        ].join(" ")}>
-                            <div>
-                                Showing{" "}
-                                <span className="font-semibold text-white">
-                  {(currentPage - 1) * pageSize + 1}
-                </span>{" "}
-                                -{" "}
-                                <span className="font-semibold text-white">
-                  {Math.min(currentPage * pageSize, filteredIds.length)}
-                </span>{" "}
-                                of{" "}
-                                <span className="font-semibold text-white">
-                  {filteredIds.length}
-                </span>{" "}
-                                restaurants
-                            </div>
-
-                            <div className="flex items-center gap-2">
-                                <button
-                                    type="button"
-                                    onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
-                                    disabled={currentPage === 1}
-                                    className="h-10 rounded-xl border border-white/25 bg-white/10 px-4 text-xs font-semibold text-white disabled:cursor-not-allowed disabled:opacity-40"
-                                >
-                                    Previous
-                                </button>
-
-                                <span className="text-xs text-white/70">
-                  Page{" "}
-                                    <span className="font-semibold text-white">{currentPage}</span> of{" "}
-                                    <span className="font-semibold text-white">{totalPages}</span>
-                </span>
-
-                                <button
-                                    type="button"
-                                    onClick={handleNextPage}
-                                    disabled={currentPage === totalPages}
-                                    className="h-10 rounded-xl border border-white/25 bg-white/10 px-4 text-xs font-semibold text-white disabled:cursor-not-allowed disabled:opacity-40"
-                                >
-                                    {loadingMore ? "Loading…" : "Next"}
-                                </button>
-                            </div>
-                        </div>
-                    ) : null}
+                    {renderPaginationNavbar()}
 
                     {nextCursor ? (
                         <div className="mt-5 flex justify-center">
