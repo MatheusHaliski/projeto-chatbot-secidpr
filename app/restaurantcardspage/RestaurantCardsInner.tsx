@@ -117,6 +117,7 @@ export function RestaurantCardsInner() {
     const [stateValue, setStateValue] = useState("");
     const [city, setCity] = useState("");
     const [category, setCategory] = useState("");
+    const [sortByNameAscending, setSortByNameAscending] = useState(false);
 
 const pageBackgroundStyle = useMemo<CSSProperties | undefined>(() => {
         const selectedCategory = category.trim().toLowerCase();
@@ -251,9 +252,21 @@ const pageBackgroundStyle = useMemo<CSSProperties | undefined>(() => {
         category,
         starsFilter,
     ]);
+    const sortedFilteredCatalog = useMemo(() => {
+        if (!sortByNameAscending) {
+            return filteredCatalog;
+        }
+
+        return [...filteredCatalog].sort((a, b) => {
+            const aName = String(a.name || "").trim();
+            const bName = String(b.name || "").trim();
+            return aName.localeCompare(bName, undefined, { sensitivity: "base" });
+        });
+    }, [filteredCatalog, sortByNameAscending]);
+
     const filteredIds = useMemo(
-        () => filteredCatalog.map((restaurant) => restaurant.id),
-        [filteredCatalog]
+        () => sortedFilteredCatalog.map((restaurant) => restaurant.id),
+        [sortedFilteredCatalog]
     );
     const totalPages = Math.max(1, Math.ceil(filteredIds.length / pageSize));
 
@@ -825,6 +838,14 @@ const pageBackgroundStyle = useMemo<CSSProperties | undefined>(() => {
                                         getOptionLabel={(opt) => `${opt}+ stars`}
                                     />
                                 </div>
+
+                                <button
+                                    type="button"
+                                    onClick={() => setSortByNameAscending((current) => !current)}
+                                    className="h-11 rounded-2xl border border-white/25 bg-white/10 px-4 text-xs font-semibold text-white transition hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/35"
+                                >
+                                    {sortByNameAscending ? "Name: A→Z (On)" : "Sort by Name A→Z"}
+                                </button>
                             </div>
                         </div>
                     </section>
