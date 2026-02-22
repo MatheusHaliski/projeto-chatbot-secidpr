@@ -55,14 +55,14 @@ body {
   border-radius: 28px;
   padding: 24px;
   width: min(90vw, 460px);
-  min-height: 220px;
+  min-height: 320px;
   max-height: min(90vh, 360px);
   box-sizing: border-box;
 }
 
 .vs-auth-alert-html {
-  margin: 40;
-  padding-bottom: 40;
+  margin: 0;
+  padding-bottom: 0;
 }
 
 .vs-auth-alert-inner {
@@ -98,7 +98,7 @@ body {
 }
 
 .vs-auth-alert-button {
-  margin-bottom: 40px;
+  margin-top: 0px;
   border-radius: 999px;
   padding: 5px 14px;
   font-weight: 700;
