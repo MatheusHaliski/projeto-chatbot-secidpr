@@ -302,11 +302,11 @@ return (
       {/* ===== OPTIONAL DECOR IMAGE ===== */}
       {hasJapaneseCategory ? (
         <div className={[CARD, "p-4 mb-6"].join(" ")}>
-          <img
-            src="/B269115E-1246-4965-A561-43E3603A146B_1_105_c.jpeg"
-            alt="Japanese decoration"
-            className="h-80 w-80 rounded-2xl border border-black/50 object-cover"
-          />
+        <img
+  src="/B269115E-1246-4965-A561-43E3603A146B_1_105_c.jpeg"
+  alt="Japanese decoration"
+  className="h-full w-full rounded-2xl border border-black/50 object-cover"
+/>
         </div>
       ) : null}
 
