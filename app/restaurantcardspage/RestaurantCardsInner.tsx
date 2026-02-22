@@ -26,6 +26,7 @@ import {
 
 import { SearchSelect } from "@/app/restaurantcardspage/selectelement";
 import { firebaseAuthGate } from "@/app/gate/firebaseClient";
+import { VSModalPaged } from "@/app/lib/authAlerts";
 import {
     FOOD_CATEGORIES,
     getCategoryIcon,
@@ -343,15 +344,21 @@ const pageBackgroundStyle = useMemo<CSSProperties | undefined>(() => {
         [catalogById, detailsById, pageIds]
     );
     useEffect(() => {
-        const t1 = getAuthSessionToken();
-        if (!t1) {
+        const token = getAuthSessionToken();
+        if (!token) {
             router.replace("/authview");
             return;
         }
+
+        void VSModalPaged({
+            title: "Alert: how do I use Dine Explorer?",
+            messages: [
+                "Click on an image to see restaurant details. Use the filters to enhance your experience.",
+            ],
+            tone: "success",
+            confirmText: "Ok",
+        });
     }, [router]);
-    useEffect(() => {
-        const token1 = getAuthSessionToken();
-    })
 
 
     useEffect(() => {
