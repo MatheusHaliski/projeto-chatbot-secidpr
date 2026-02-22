@@ -305,7 +305,15 @@ export default function RestaurantInfoFront({ restaurant, reviews }: Props) {
     </div>
   </div>
 </header>
-
+{hasJapaneseCategory ? (
+  <div className={[CARD, "p-4 mb-6 h-80"].join(" ")}>
+    <img
+      src="/B269115E-1246-4965-A561-43E3603A146B_1_105_c.jpeg"
+      alt="Japanese decoration"
+      className="h-full w-full rounded-2xl border border-black/50 object-cover"
+    />
+  </div>
+) : null}
           <section className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
             <div className="rounded-3xl border-8 border-yellow-100 bg-white p-6 shadow-sm">
               <h2 className="text-xl font-extrabold text-black">
