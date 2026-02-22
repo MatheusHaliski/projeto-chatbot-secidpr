@@ -134,7 +134,7 @@ const pageBackgroundStyle = useMemo<CSSProperties | undefined>(() => {
 
         if (selectedCategory === "bakery/cafe") {
             return {
-                backgroundImage: 'url("/8CCCB4F5-AE77-470B-8894-82E22C37C96E.png")',
+                backgroundImage: 'url("/B8A1086C-174F-4CAA-BCE5-A375FBFD2DB1.png")',
                 backgroundPosition: "left top",
                 backgroundRepeat: "repeat",
                 backgroundSize: "220px 220px",
@@ -250,6 +250,14 @@ const pageBackgroundStyle = useMemo<CSSProperties | undefined>(() => {
      if (selectedCategory === "grocery") {
             return {
                 backgroundImage: 'url("/75CE0333-DF13-4DD2-A211-C79DDD4A6072.jpeg")',
+                backgroundPosition: "left top",
+                backgroundRepeat: "repeat",
+                backgroundSize: "220px 220px",
+            };
+        }
+        if (selectedCategory === "casual/local") {
+            return {
+                backgroundImage: 'url("/B9C14361-6F3F-4378-8099-4109F7098575.png")',
                 backgroundPosition: "left top",
                 backgroundRepeat: "repeat",
                 backgroundSize: "220px 220px",

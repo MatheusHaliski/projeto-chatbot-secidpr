@@ -7,14 +7,13 @@ import {
 } from "@/app/gate/restaurantpagegate";
 import { normalizeCategoryLabel } from "@/app/gate/categories";
 
-import { TEXT_GLOW, FILTER_GLOW_LINE, CARD_GLASS } from "@/app/lib/uiToken";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { FILTER_GLOW_LINE } from "@/app/lib/uiToken";
+import { useEffect, useMemo, useState } from "react";
 import {
   getAuthSessionProfile,
   getAuthSessionToken,
 } from "@/app/lib/authSession";
 import { VSModalPaged } from "@/app/lib/authAlerts";
-import {router} from "next/client";
 import {useRouter} from "next/navigation";
 /* ======================
    TYPES
@@ -126,6 +125,43 @@ export default function RestaurantInfoFront({ restaurant, reviews }: Props) {
         .filter(Boolean);
   }, [restaurant.categories]);
 
+  const hasJapaneseCategory = useMemo(
+    () => categoryList.some((category) => category.toLowerCase() === "japanese"),
+    [categoryList]
+  );
+
+  const pageBackgroundStyle = useMemo(() => {
+    const categoryKey = categoryList[0]?.trim().toLowerCase();
+
+    const categoryBackgroundMap: Record<string, string> = {
+      japanese: "/9BE60003-166D-4946-AA7D-18A1B1F5827D.png",
+      "bakery/cafe": "/B8A1086C-174F-4CAA-BCE5-A375FBFD2DB1.png",
+      "fast food": "/34354493-DF0F-42A9-85BF-B1680396B151.png",
+      desserts: "/CA9E9EFC-CE82-4D18-BF5F-F64426CC0D37.png",
+      "italian/pizza": "/9C5C070B-47CE-4043-A29D-506AE19535FA.png",
+      "chicken shop": "/1823E80A-4EDD-4EBC-B510-88775C2D57B1.png",
+      mexican: "/9C7464B5-579E-4D0D-947F-B24A4D449097.png",
+      arabic: "/D03D8233-DBB7-43DD-8590-986225967093.png",
+      "sandwich shop": "/1F8BA437-D9EF-45D6-91B4-673495AA4A57_1_105_c.jpeg",
+      barbeque: "/DD16FA97-1CD2-4A0C-A8CE-210FF81705F5_1_105_c.jpeg",
+      "açai & bowls": "/13C7D1E7-948D-42DB-846F-8D5AEA265881.jpeg",
+      argentine: "/54AEB9FC-4CD5-4E03-9460-05DE0FBA1C1A.jpeg",
+      vegan: "/90237925-DE31-4DFF-9F26-46E35A630991.jpeg",
+    };
+
+    const backgroundImage = categoryKey ? categoryBackgroundMap[categoryKey] : undefined;
+    if (!backgroundImage) {
+      return undefined;
+    }
+
+    return {
+      backgroundImage: `url("${backgroundImage}")`,
+      backgroundPosition: "left top",
+      backgroundRepeat: "repeat",
+      backgroundSize: "220px 220px",
+    };
+  }, [categoryList]);
+
   const latestReviews = useMemo(() => {
     return [...localReviews].sort((a, b) => {
       const aDate = a.createdAt ? new Date(a.createdAt).getTime() : 0;
@@ -194,26 +230,28 @@ export default function RestaurantInfoFront({ restaurant, reviews }: Props) {
       setLocalReviews((prev) => [newReview, ...prev]);
       setReviewRating(0);
       setReviewText("");
-    } catch (err: any) {
-      setSubmitError(err?.message || "Unable to submit commentary.");
+    } catch (err: unknown) {
+      setSubmitError(
+        err instanceof Error ? err.message : "Unable to submit commentary."
+      );
     } finally {
       setSubmitting(false);
     }
   };
 
   return (
-      <div className="min-h-screen w-full bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-950 text-white">
+      <div className="min-h-screen w-full text-black" style={pageBackgroundStyle}>
         <div className="mx-auto max-w-6xl px-6 py-8">
           {/* ===== HEADER ===== */}
           <header
               className={[
                 "relative overflow-hidden rounded-3xl border border-white/18",
-                "bg-white/[0.06] backdrop-blur-2xl mb-6",
+                "bg-white/95 backdrop-blur-2xl mb-6",
                 FILTER_GLOW_LINE,
               ].join(" ")}
           >
             <div className="relative grid gap-6 p-6 md:grid-cols-[300px_1fr]">
-              <div className="aspect-[4/3] overflow-hidden rounded-2xl border border-white/12 bg-white/5">
+              <div className="aspect-[4/3] overflow-hidden rounded-2xl border border-black/10 bg-white">
                 {restaurant.photo ? (
                     <img
                         src={restaurant.photo}
@@ -224,9 +262,19 @@ export default function RestaurantInfoFront({ restaurant, reviews }: Props) {
               </div>
 
               <div>
-                <h1 className={`text-3xl font-extrabold ${TEXT_GLOW}`}>
-                  {restaurant.name}
-                </h1>
+                <div className="flex flex-wrap items-start justify-between gap-4">
+                  <h1 className="text-3xl font-extrabold text-black">
+                    {restaurant.name}
+                  </h1>
+
+                  {hasJapaneseCategory ? (
+                    <img
+                      src="/B269115E-1246-4965-A561-43E3603A146B_1_105_c.jpeg"
+                      alt="Japanese decoration"
+                      className="h-20 w-20 rounded-xl border border-black/15 object-cover"
+                    />
+                  ) : null}
+                </div>
 
                 <div className="mt-3 flex items-center gap-3">
                   {flag && (
@@ -236,14 +284,14 @@ export default function RestaurantInfoFront({ restaurant, reviews }: Props) {
                           className="h-6 w-9 rounded-md ring-1 ring-white/20"
                       />
                   )}
-                  <span className="font-semibold">{locationLine}</span>
+                  <span className="font-semibold text-black/80">{locationLine}</span>
                 </div>
 
-                <div className="mt-4 inline-flex items-center gap-2 rounded-2xl border border-white/18 bg-white/[0.10] px-4 py-2">
+                <div className="mt-4 inline-flex items-center gap-2 rounded-2xl border border-black/15 bg-white px-4 py-2">
                 <span className="text-amber-400 font-bold text-lg">
                   {"★".repeat(rounded)}
                 </span>
-                  <span className="text-sm text-white/70">
+                  <span className="text-sm text-black/70">
                   {display.toFixed(1)} / 5
                 </span>
                 </div>
@@ -252,18 +300,18 @@ export default function RestaurantInfoFront({ restaurant, reviews }: Props) {
           </header>
 
           <section className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
-            <div className={`${CARD_GLASS} p-6`}>
-              <h2 className={`text-xl font-extrabold ${TEXT_GLOW}`}>
+            <div className="rounded-3xl border border-black/10 bg-white p-6 shadow-sm">
+              <h2 className="text-xl font-extrabold text-black">
                 Restaurant categories
               </h2>
               {categoryList.length === 0 ? (
-                  <p className="mt-3 text-white/70">No categories available.</p>
+                  <p className="mt-3 text-black/70">No categories available.</p>
               ) : (
                   <div className="mt-4 flex flex-wrap gap-3">
                     {categoryList.map((category) => (
                         <span
                             key={category}
-                            className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.08] px-4 py-2 text-sm font-semibold text-white/90"
+                            className="inline-flex items-center gap-2 rounded-full border border-black/10 bg-white px-4 py-2 text-sm font-semibold text-black/90"
                         >
                     <span aria-hidden="true">{getCategoryIcon(category).src}</span>
                     <span>{category}</span>
@@ -273,10 +321,10 @@ export default function RestaurantInfoFront({ restaurant, reviews }: Props) {
               )}
             </div>
 
-            <div className={`${CARD_GLASS} p-6`}>
-              <h2 className={`text-xl font-extrabold ${TEXT_GLOW}`}>Mini map</h2>
+            <div className="rounded-3xl border border-black/10 bg-white p-6 shadow-sm">
+              <h2 className="text-xl font-extrabold text-black">Mini map</h2>
               {locationLine ? (
-                  <div className="mt-4 overflow-hidden rounded-2xl border border-white/15">
+                  <div className="mt-4 overflow-hidden rounded-2xl border border-black/15">
                     <iframe
                         title="Restaurant location map"
                         src={`https://www.google.com/maps?q=${encodeURIComponent(
@@ -287,38 +335,38 @@ export default function RestaurantInfoFront({ restaurant, reviews }: Props) {
                     />
                   </div>
               ) : (
-                  <p className="mt-3 text-white/70">No address available.</p>
+                  <p className="mt-3 text-black/70">No address available.</p>
               )}
             </div>
           </section>
 
           {/* ===== REVIEWS ===== */}
-          <section className={`${CARD_GLASS} p-6`}>
+          <section className="mt-6 rounded-3xl border border-black/10 bg-white p-6 shadow-sm">
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div>
-                <h2 className={`text-xl font-extrabold ${TEXT_GLOW}`}>Commentary</h2>
-                <p className="mt-1 text-white/70 text-sm">
+                <h2 className="text-xl font-extrabold text-black">Commentary</h2>
+                <p className="mt-1 text-black/70 text-sm">
                   Share your latest thoughts and read the newest updates.
                 </p>
               </div>
-              <div className="text-sm text-white/60">
+              <div className="text-sm text-black/60">
                 {latestReviews.length} comment{latestReviews.length === 1 ? "" : "s"}
               </div>
             </div>
 
             <form
                 onSubmit={handleSubmit}
-                className="mt-6 grid gap-4 rounded-2xl border border-white/10 bg-white/[0.04] p-4"
+                className="mt-6 grid gap-4 rounded-2xl border border-black/10 bg-white p-4"
             >
               <div className="grid gap-2">
-                <label className="text-sm font-semibold text-white/80" htmlFor="rating">
+                <label className="text-sm font-semibold text-black/80" htmlFor="rating">
                   Rating
                 </label>
                 <select
                     id="rating"
                     value={reviewRating}
                     onChange={(event) => setReviewRating(Number(event.target.value))}
-                    className="rounded-xl bg-white/90 px-3 py-2 text-black"
+                    className="rounded-xl border border-black/10 bg-white px-3 py-2 text-black"
                 >
                   {[0, 1, 2, 3, 4, 5].map((value) => (
                       <option key={value} value={value}>
@@ -329,7 +377,7 @@ export default function RestaurantInfoFront({ restaurant, reviews }: Props) {
               </div>
 
               <div className="grid gap-2">
-                <label className="text-sm font-semibold text-white/80" htmlFor="commentary">
+                <label className="text-sm font-semibold text-black/80" htmlFor="commentary">
                   Your commentary
                 </label>
                 <textarea
@@ -338,7 +386,7 @@ export default function RestaurantInfoFront({ restaurant, reviews }: Props) {
                     onChange={(event) => setReviewText(event.target.value)}
                     rows={4}
                     placeholder="Share your thoughts about this restaurant..."
-                    className="rounded-xl bg-white/90 px-3 py-2 text-black"
+                    className="rounded-xl border border-black/10 bg-white px-3 py-2 text-black"
                 />
               </div>
 
@@ -346,20 +394,20 @@ export default function RestaurantInfoFront({ restaurant, reviews }: Props) {
 
               <button
                   disabled={submitting}
-                  className="w-full rounded-xl border border-white/20 bg-white/[0.12] px-4 py-2 font-semibold text-white hover:bg-white/[0.18] disabled:cursor-not-allowed disabled:opacity-60"
+                  className="w-full rounded-xl border border-black/15 bg-black px-4 py-2 font-semibold text-white hover:bg-black/85 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {submitting ? "Submitting..." : "Submit commentary"}
               </button>
             </form>
 
             {latestReviews.length === 0 ? (
-                <p className="mt-6 text-white/70">No commentary yet.</p>
+                <p className="mt-6 text-black/70">No commentary yet.</p>
             ) : (
                 <ul className="mt-6 space-y-4">
                   {latestReviews.map((review) => (
                       <li
                           key={review.id}
-                          className="rounded-2xl border border-white/12 bg-white/[0.06] p-4"
+                          className="rounded-2xl border border-black/12 bg-white p-4"
                       >
                         <div className="flex items-center gap-3">
                           {review.userPhoto && (
@@ -381,7 +429,7 @@ export default function RestaurantInfoFront({ restaurant, reviews }: Props) {
                           </div>
                         </div>
 
-                        <p className="mt-3 text-sm text-white/80">{review.text ?? "No comment"}</p>
+                        <p className="mt-3 text-sm text-black/80">{review.text ?? "No comment"}</p>
                       </li>
                   ))}
                 </ul>
