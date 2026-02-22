@@ -230,6 +230,14 @@ const pageBackgroundStyle = useMemo<CSSProperties | undefined>(() => {
             };
             
         }
+        if (selectedCategory === "vegan") {
+            return {
+                backgroundImage: 'url("/90237925-DE31-4DFF-9F26-46E35A630991.jpeg")',
+                backgroundPosition: "left top",
+                backgroundRepeat: "repeat",
+                backgroundSize: "220px 220px",
+            };
+        }
         return undefined;
     }, [category]);
     
