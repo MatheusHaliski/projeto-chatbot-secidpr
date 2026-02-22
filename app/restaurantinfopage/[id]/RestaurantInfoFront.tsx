@@ -240,8 +240,8 @@ export default function RestaurantInfoFront({ restaurant, reviews }: Props) {
   };
 
   return (
-      <div className="min-h-screen w-full text-black" style={pageBackgroundStyle}>
-        <div className="mx-auto max-w-6xl px-6 py-8">
+      <div className="min-h-screen w-full border-8 border-yellow-100 text-black" style={pageBackgroundStyle}>
+        <div className="mx-auto max-w-6xl border-8 border-yellow-100 px-6 py-8">
           {/* ===== HEADER ===== */}
           <header
               className={[
@@ -250,8 +250,8 @@ export default function RestaurantInfoFront({ restaurant, reviews }: Props) {
                 FILTER_GLOW_LINE,
               ].join(" ")}
           >
-            <div className="relative grid gap-6 p-6 md:grid-cols-[300px_1fr]">
-              <div className="aspect-[4/3] overflow-hidden rounded-2xl border border-black/10 bg-white">
+            <div className="relative grid gap-6 border-8 border-yellow-100 p-6 md:grid-cols-[300px_1fr]">
+              <div className="aspect-[4/3] overflow-hidden rounded-2xl border-8 border-yellow-100 bg-white">
                 {restaurant.photo ? (
                     <img
                         src={restaurant.photo}
@@ -261,8 +261,8 @@ export default function RestaurantInfoFront({ restaurant, reviews }: Props) {
                 ) : null}
               </div>
 
-              <div>
-                <div className="flex flex-wrap items-start justify-between gap-4">
+              <div className="border-8 border-yellow-100">
+                <div className="flex flex-wrap items-start justify-between gap-4 border-8 border-yellow-100">
                   <h1 className="text-3xl font-extrabold text-black">
                     {restaurant.name}
                   </h1>
@@ -271,12 +271,12 @@ export default function RestaurantInfoFront({ restaurant, reviews }: Props) {
                     <img
                       src="/B269115E-1246-4965-A561-43E3603A146B_1_105_c.jpeg"
                       alt="Japanese decoration"
-                      className="h-20 w-20 rounded-xl border border-black/15 object-cover"
+                      className="h-320 w-320 rounded-xl border border-black/15 object-cover"
                     />
                   ) : null}
                 </div>
 
-                <div className="mt-3 flex items-center gap-3">
+                <div className="mt-3 flex items-center gap-3 border-8 border-yellow-100">
                   {flag && (
                       <img
                           src={flag.src}
@@ -287,7 +287,7 @@ export default function RestaurantInfoFront({ restaurant, reviews }: Props) {
                   <span className="font-semibold text-black/80">{locationLine}</span>
                 </div>
 
-                <div className="mt-4 inline-flex items-center gap-2 rounded-2xl border border-black/15 bg-white px-4 py-2">
+                <div className="mt-4 inline-flex items-center gap-2 rounded-2xl border-8 border-yellow-100 bg-white px-4 py-2">
                 <span className="text-amber-400 font-bold text-lg">
                   {"★".repeat(rounded)}
                 </span>
@@ -300,14 +300,14 @@ export default function RestaurantInfoFront({ restaurant, reviews }: Props) {
           </header>
 
           <section className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
-            <div className="rounded-3xl border border-black/10 bg-white p-6 shadow-sm">
+            <div className="rounded-3xl border-8 border-yellow-100 bg-white p-6 shadow-sm">
               <h2 className="text-xl font-extrabold text-black">
                 Restaurant categories
               </h2>
               {categoryList.length === 0 ? (
                   <p className="mt-3 text-black/70">No categories available.</p>
               ) : (
-                  <div className="mt-4 flex flex-wrap gap-3">
+                  <div className="mt-4 flex flex-wrap gap-3 border-8 border-yellow-100">
                     {categoryList.map((category) => (
                         <span
                             key={category}
@@ -321,10 +321,10 @@ export default function RestaurantInfoFront({ restaurant, reviews }: Props) {
               )}
             </div>
 
-            <div className="rounded-3xl border border-black/10 bg-white p-6 shadow-sm">
+            <div className="rounded-3xl border-8 border-yellow-100 bg-white p-6 shadow-sm">
               <h2 className="text-xl font-extrabold text-black">Mini map</h2>
               {locationLine ? (
-                  <div className="mt-4 overflow-hidden rounded-2xl border border-black/15">
+                  <div className="mt-4 overflow-hidden rounded-2xl border-8 border-yellow-100">
                     <iframe
                         title="Restaurant location map"
                         src={`https://www.google.com/maps?q=${encodeURIComponent(
@@ -342,14 +342,14 @@ export default function RestaurantInfoFront({ restaurant, reviews }: Props) {
 
           {/* ===== REVIEWS ===== */}
           <section className="mt-6 rounded-3xl border border-black/10 bg-white p-6 shadow-sm">
-            <div className="flex flex-wrap items-center justify-between gap-4">
-              <div>
+            <div className="flex flex-wrap items-center justify-between gap-4 border-8 border-yellow-100">
+              <div className="border-8 border-yellow-100">
                 <h2 className="text-xl font-extrabold text-black">Commentary</h2>
                 <p className="mt-1 text-black/70 text-sm">
                   Share your latest thoughts and read the newest updates.
                 </p>
               </div>
-              <div className="text-sm text-black/60">
+              <div className="border-8 border-yellow-100 text-sm text-black/60">
                 {latestReviews.length} comment{latestReviews.length === 1 ? "" : "s"}
               </div>
             </div>
@@ -358,7 +358,7 @@ export default function RestaurantInfoFront({ restaurant, reviews }: Props) {
                 onSubmit={handleSubmit}
                 className="mt-6 grid gap-4 rounded-2xl border border-black/10 bg-white p-4"
             >
-              <div className="grid gap-2">
+              <div className="grid gap-2 border-8 border-yellow-100">
                 <label className="text-sm font-semibold text-black/80" htmlFor="rating">
                   Rating
                 </label>
@@ -376,7 +376,7 @@ export default function RestaurantInfoFront({ restaurant, reviews }: Props) {
                 </select>
               </div>
 
-              <div className="grid gap-2">
+              <div className="grid gap-2 border-8 border-yellow-100">
                 <label className="text-sm font-semibold text-black/80" htmlFor="commentary">
                   Your commentary
                 </label>
@@ -390,7 +390,7 @@ export default function RestaurantInfoFront({ restaurant, reviews }: Props) {
                 />
               </div>
 
-              {submitError ? <div className="text-sm text-red-300">{submitError}</div> : null}
+              {submitError ? <div className="border-8 border-yellow-100 text-sm text-red-300">{submitError}</div> : null}
 
               <button
                   disabled={submitting}
@@ -409,7 +409,7 @@ export default function RestaurantInfoFront({ restaurant, reviews }: Props) {
                           key={review.id}
                           className="rounded-2xl border border-black/12 bg-white p-4"
                       >
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-3 border-8 border-yellow-100">
                           {review.userPhoto && (
                               <img
                                   src={review.userPhoto}
@@ -417,11 +417,11 @@ export default function RestaurantInfoFront({ restaurant, reviews }: Props) {
                                   alt=""
                               />
                           )}
-                          <div>
-                            <div className="font-semibold">
+                          <div className="border-8 border-yellow-100">
+                            <div className="border-8 border-yellow-100 font-semibold">
                               {review.userDisplayName ?? "Anonymous"}
                             </div>
-                            <div className="text-amber-400 text-sm">
+                            <div className="border-8 border-yellow-100 text-amber-400 text-sm">
                               {"★".repeat(
                                   Math.round(parseRatingValue(review.rating ?? review.grade ?? 0))
                               )}
