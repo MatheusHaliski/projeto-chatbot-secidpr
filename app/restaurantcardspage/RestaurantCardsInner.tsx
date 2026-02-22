@@ -194,6 +194,15 @@ const pageBackgroundStyle = useMemo<CSSProperties | undefined>(() => {
             };
             
         }
+    if (selectedCategory === "sandwich shop") {
+            return {
+                backgroundImage: 'url("/1F8BA437-D9EF-45D6-91B4-673495AA4A57_1_105_c.jpeg")',
+                backgroundPosition: "left top",
+                backgroundRepeat: "repeat",
+                backgroundSize: "220px 220px",
+            };
+            
+        }
         return undefined;
     }, [category]);
     
