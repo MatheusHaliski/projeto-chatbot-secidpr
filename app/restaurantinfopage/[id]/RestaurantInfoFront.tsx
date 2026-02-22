@@ -271,7 +271,7 @@ export default function RestaurantInfoFront({ restaurant, reviews }: Props) {
                     <img
                       src="/B269115E-1246-4965-A561-43E3603A146B_1_105_c.jpeg"
                       alt="Japanese decoration"
-                      className="h-20 w-20 rounded-xl border border-black/15 object-cover"
+                      className="h-320 w-320 rounded-xl border border-black/15 object-cover"
                     />
                   ) : null}
                 </div>

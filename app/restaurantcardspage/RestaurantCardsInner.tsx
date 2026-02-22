@@ -352,27 +352,21 @@ const pageBackgroundStyle = useMemo<CSSProperties | undefined>(() => {
         [catalogById, detailsById, pageIds]
     );
     useEffect(() => {
-        const t1 = getAuthSessionToken();
-        if (!t1) {
+        const token = getAuthSessionToken();
+        if (!token) {
             router.replace("/authview");
             return;
         }
-    }, [router]);
 
-    useEffect(() => {
         void VSModalPaged({
-            title: "Alert",
+            title: "Alert: how do I use Dine Explorer?",
             messages: [
                 "Click on an image to see restaurant details. Use the filters to enhance your experience.",
             ],
             tone: "success",
             confirmText: "Ok",
         });
-    }, []);
-
-    useEffect(() => {
-        const token1 = getAuthSessionToken();
-    })
+    }, [router]);
 
 
     useEffect(() => {
