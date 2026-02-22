@@ -148,6 +148,12 @@ export default function RestaurantInfoFront({ restaurant, reviews }: Props) {
         alt: "Mexican decoration",
       };
     };
+     if (normalized.includes("fast food")) {
+       return {
+        src: "/F4A6567D-AFD8-4AEC-9586-B876FB5CF351.png",
+        alt: "Mexican decoration",
+      };
+    };
 
     return null;
      }, [categoryList]);
