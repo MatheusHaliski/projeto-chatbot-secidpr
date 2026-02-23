@@ -326,7 +326,7 @@ export default function RestaurantInfoFront({ restaurant, reviews }: Props) {
 
         {/* ===== TRENDING IMAGE (usa a categoria, incluindo japanese) ===== */}
         {categoryTrendingImage ? (
-          <div className={[CARD, "mb-6 h-80 p-4"].join(" ")}>
+          <div className={[CARD, "mb-6 h-160 p-4"].join(" ")}>
             <img
               src={categoryTrendingImage.src}
               alt={categoryTrendingImage.alt}
