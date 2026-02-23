@@ -151,19 +151,25 @@ export default function RestaurantInfoFront({ restaurant, reviews }: Props) {
      if (normalized.includes("fast food")) {
        return {
         src: "/F4A6567D-AFD8-4AEC-9586-B876FB5CF351.png",
-        alt: "Mexican decoration",
+        alt: "fast food decoration",
       };
     };
      if (normalized.includes("vegan")) {
        return {
         src: "/C38E8955-A618-43EE-931F-71E84DC14161.png",
-        alt: "Mexican decoration",
+        alt: "vegan decoration",
       };
     };
      if (normalized.includes("açai & bowls")) {
        return {
         src: "/0972126C-ABF5-4E17-B052-AD50C4F3CAC0.png",
-        alt: "Mexican decoration",
+        alt: "açai & bowls decoration",
+      };
+    };
+       if (normalized.includes("arabic")) {
+       return {
+        src: "/8CB1B9C1-CDF2-4F7D-814E-58DDBAA7EA98.png",
+        alt: "Arabic decoration",
       };
     };
     return null;
