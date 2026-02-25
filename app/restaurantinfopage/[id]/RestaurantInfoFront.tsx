@@ -203,8 +203,14 @@ export default function RestaurantInfoFront({ restaurant, reviews }: Props) {
         alt: "Argentine decoration",
       };
     };
+    if (normalized.includes("casual/local") && countryName.trim().toLowerCase() === "usa") {
+      return {
+        src: "/Sem título - 19 de fevereiro de 2026 às 19.15.50 (8).PNG",
+        alt: "Casual local USA decoration",
+      };
+    }
     return null;
-     }, [categoryList]);
+     }, [categoryList, countryName]);
 
   const CARD = "rounded-3xl border border-black/50 bg-white";
   const BADGE =
