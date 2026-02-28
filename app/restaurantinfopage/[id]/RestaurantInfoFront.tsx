@@ -130,10 +130,10 @@ export default function RestaurantInfoFront({ restaurant, reviews }: Props) {
     const normalized = categoryList.map((category) => category.toLowerCase());
     const restaurantName = (restaurant.name ?? "").trim().toLowerCase();
 
-    if (restaurantName.trim().toLowerCase() === "chick-fill-a") {
+    if (restaurantName.trim().toLowerCase() === "chick-fil-a") {
       return {
         src: "/0586AF72-0F8A-4EAC-A697-9C408C658DAD.png",
-        alt: "Chick-fill-A decoration",
+        alt: "Chick-fil-A decoration",
       };
     }
 
