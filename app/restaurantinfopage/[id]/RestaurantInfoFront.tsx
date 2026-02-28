@@ -128,6 +128,14 @@ export default function RestaurantInfoFront({ restaurant, reviews }: Props) {
   // Imagem "trending" por categoria (inclui japanese e italian/pizza)
   const categoryTrendingImage = useMemo(() => {
     const normalized = categoryList.map((category) => category.toLowerCase());
+    const restaurantName = (restaurant.name ?? "").trim().toLowerCase();
+
+    if (restaurantName === "chick-fill-a") {
+      return {
+        src: "/0586AF72-0F8A-4EAC-A697-9C408C658DAD.png",
+        alt: "Chick-fill-A decoration",
+      };
+    }
 
     if (normalized.includes("japanese")) {
       return {
@@ -203,18 +211,6 @@ export default function RestaurantInfoFront({ restaurant, reviews }: Props) {
         alt: "Argentine decoration",
       };
     };
-    if (normalized.includes("chicken shop"))  {
-       return {
-        src: "/DB00C326-E99C-4D0A-91BE-C9A3A63E8719.png",
-        alt: "Chicken decoration",
-      };
-    };
-    if (normalized.includes("grocery")) {
-       return {
-        src: "/ChatGPT Image 28 de fev. de 2026, 14_11_29.png",
-        alt: "Chicken decoration",
-      };
-    };
     if (normalized.includes("casual/local") && countryName.trim().toLowerCase() === "usa") {
       return {
         src: "/Sem título - 19 de fevereiro de 2026 às 19.15.50 (8).PNG",
@@ -222,7 +218,7 @@ export default function RestaurantInfoFront({ restaurant, reviews }: Props) {
       };
     }
     return null;
-     }, [categoryList, countryName]);
+     }, [categoryList, countryName, restaurant.name]);
 
   const CARD = "rounded-3xl border border-black/50 bg-white";
   const BADGE =
