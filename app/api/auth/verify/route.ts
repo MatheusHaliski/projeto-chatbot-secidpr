@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "node:crypto";
 import { getAdminFirestore } from "@/app/lib/firebaseAdmin";
+import { consumeRateLimit, resolveClientIp } from "@/app/lib/security/basicRateLimit";
 export const runtime = "nodejs";
 type AuthPayload = {
     email?: string;
@@ -17,7 +18,18 @@ type UserRecord = {
 
 const HASH_ALGORITHM = "SHA-256";
 const APP_PEPPER = "vs-usercontrol-v1";
-
+const AUTH_VERIFY_IP_LIMIT_MAX = Number(
+    process.env.AUTH_VERIFY_RATE_LIMIT_IP_MAX ?? "10"
+);
+const AUTH_VERIFY_EMAIL_LIMIT_MAX = Number(
+    process.env.AUTH_VERIFY_RATE_LIMIT_EMAIL_MAX ?? "5"
+);
+const AUTH_VERIFY_EMAIL_GLOBAL_LIMIT_MAX = Number(
+    process.env.AUTH_VERIFY_RATE_LIMIT_EMAIL_GLOBAL_MAX ?? "12"
+);
+const AUTH_VERIFY_LIMIT_WINDOW_MS = Number(
+    process.env.AUTH_VERIFY_RATE_LIMIT_WINDOW_MS ?? "60000"
+);
 const buildSalt = (saltBase64: string) =>
     Buffer.concat([
         Buffer.from(saltBase64, "base64"),
@@ -79,6 +91,64 @@ export async function POST(request: NextRequest): Promise<Response> {
 
     const email = body.email?.trim().toLowerCase() ?? "";
     const password = body.password?.trim() ?? "";
+    const clientIp = resolveClientIp(request);
+    const ipRateLimit = consumeRateLimit({
+        namespace: "auth-verify-ip",
+        key: clientIp,
+        maxRequests: AUTH_VERIFY_IP_LIMIT_MAX,
+        windowMs: AUTH_VERIFY_LIMIT_WINDOW_MS,
+    });
+
+    if (!ipRateLimit.allowed) {
+        const response = NextResponse.json(
+            { error: "Too many verification attempts. Please try again shortly." },
+            { status: 429 }
+        );
+        response.headers.set("Retry-After", String(ipRateLimit.retryAfterSeconds));
+        return response;
+    }
+    if (email) {
+        const emailRateLimit = consumeRateLimit({
+            namespace: "auth-verify-email",
+            key: `${clientIp}:${email}`,
+            maxRequests: AUTH_VERIFY_EMAIL_LIMIT_MAX,
+            windowMs: AUTH_VERIFY_LIMIT_WINDOW_MS,
+        });
+
+        if (!emailRateLimit.allowed) {
+            const response = NextResponse.json(
+                {
+                    error:
+                        "Too many verification attempts for this account. Please try again shortly.",
+                },
+                { status: 429 }
+            );
+            response.headers.set("Retry-After", String(emailRateLimit.retryAfterSeconds));
+            return response;
+        }
+
+        const emailGlobalRateLimit = consumeRateLimit({
+            namespace: "auth-verify-email-global",
+            key: email,
+            maxRequests: AUTH_VERIFY_EMAIL_GLOBAL_LIMIT_MAX,
+            windowMs: AUTH_VERIFY_LIMIT_WINDOW_MS,
+        });
+
+        if (!emailGlobalRateLimit.allowed) {
+            const response = NextResponse.json(
+                {
+                    error:
+                        "Too many verification attempts for this account. Please try again shortly.",
+                },
+                { status: 429 }
+            );
+            response.headers.set(
+                "Retry-After",
+                String(emailGlobalRateLimit.retryAfterSeconds)
+            );
+            return response;
+        }
+    }
 
     if (!email || !password) {
         return NextResponse.json(
