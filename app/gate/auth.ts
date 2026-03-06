@@ -201,9 +201,19 @@ export function useAuthGate(): UseAuthGateReturn  {
     }
 
     try {
+      if (!auth?.currentUser) {
+        setPinVerified(false);
+        setPinError("You must sign in with Google before verifying the PIN.");
+        return;
+      }
+
+      const firebaseToken = await auth.currentUser.getIdToken();
       const res = await fetch("/api/pin", {
         method: "POST",
-        headers: {"Content-Type": "application/json"},
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${firebaseToken}`,
+        },
         body: JSON.stringify({pin: normalized}),
       });
       const data: unknown = await res.json().catch(() => ({}));
