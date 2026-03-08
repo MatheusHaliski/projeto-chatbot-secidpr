@@ -2,8 +2,21 @@
 import Image from "next/image";
 import AuthShell2 from "../components/AuthShell2";
 import SignupForm from "./SignupForm";
-
+import {clearAuthSessionToken, setAuthSessionProfile, setAuthSessionToken} from "@/app/lib/authSession";
+import { getDevSessionToken,getAuthSessionToken, setDevSessionToken } from "@/app/lib/devSession";
 export default function SignupViewPage() {
+     useEffect(() => {
+        const t = getDevSessionToken();
+        if (!t) {
+            router.replace("/");
+            return;
+        }
+    }, [router]);
+
+    useEffect(() => {
+        if (pathname !== "/forgetpasswordview") return;
+        clearAuthSessionToken();
+    }, [pathname]);
     return (
         <AuthShell2
             title="Start your Dine Explorer journey"
