@@ -6,7 +6,8 @@ import {clearAuthSessionToken, setAuthSessionProfile, setAuthSessionToken} from 
 import { getDevSessionToken,setDevSessionToken } from "@/app/lib/devSession";
 import {usePathname, useRouter} from "next/navigation";
 export default function SignupViewPage() {
-     const pathname = usePathname();
+    const pathname = usePathname();
+    const router = useRouter();
     useEffect(() => {
         const t = getDevSessionToken();
         if (!t) {
