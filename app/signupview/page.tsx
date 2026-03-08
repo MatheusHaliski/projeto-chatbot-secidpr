@@ -14,7 +14,7 @@ export default function SignupViewPage() {
     }, [router]);
 
     useEffect(() => {
-        if (pathname !== "/forgetpasswordview") return;
+        if (pathname !== "/signupview") return;
         clearAuthSessionToken();
     }, [pathname]);
     return (
