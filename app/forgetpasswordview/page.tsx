@@ -3,7 +3,7 @@
 import AuthShell from "../components/AuthShell";
 import { Button } from "@/components/ui/button";
 import { VSModalPaged } from "@/app/lib/authAlerts";
-import { useRouter } from "next/navigation";
+import { useRouter,usePathname } from "next/navigation";
 import { type FormEvent, useState } from "react";
 import {clearAuthSessionToken, setAuthSessionProfile, setAuthSessionToken} from "@/app/lib/authSession";
 import { getDevSessionToken,setDevSessionToken } from "@/app/lib/devSession";
