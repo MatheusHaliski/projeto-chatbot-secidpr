@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import {usePathname, useRouter} from "next/navigation";
 import {VSModalPaged} from  "@/app/lib/authAlerts";
 import {clearAuthSessionToken, setAuthSessionProfile, setAuthSessionToken} from "@/app/lib/authSession";
-import { getDevSessionToken,getAuthSessionToken, setDevSessionToken } from "@/app/lib/devSession";
+import { getDevSessionToken, setDevSessionToken } from "@/app/lib/devSession";
 
 
 
