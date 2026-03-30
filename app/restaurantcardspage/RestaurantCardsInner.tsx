@@ -267,6 +267,68 @@ const pageBackgroundStyle = useMemo<CSSProperties | undefined>(() => {
         }
         return undefined;
     }, [category]);
+
+    const selectedCategoryDecoration = useMemo(() => {
+        const selectedCategory = category.trim().toLowerCase();
+
+        const decorationMap: Record<string, { src: string; alt: string }> = {
+            japanese: {
+                src: "/B269115E-1246-4965-A561-43E3603A146B_1_105_c.jpeg",
+                alt: "Japanese decoration",
+            },
+            "chicken shop": {
+                src: "/DB00C326-E99C-4D0A-91BE-C9A3A63E8719.png",
+                alt: "Chicken Shop decoration",
+            },
+            "italian/pizza": {
+                src: "/14EDD76F-9F43-4D38-A1D0-8FA09D82B362_1_105_c.jpeg",
+                alt: "Italian decoration",
+            },
+            mexican: {
+                src: "/Firefly_Flux_Consegue retirar os fornos atras do homem de chapeu e inserir tabuas de nachos, guaca 349340.jpg",
+                alt: "Mexican decoration",
+            },
+            "fast food": {
+                src: "/F4A6567D-AFD8-4AEC-9586-B876FB5CF351.png",
+                alt: "Fast food decoration",
+            },
+            vegan: {
+                src: "/C38E8955-A618-43EE-931F-71E84DC14161.png",
+                alt: "Vegan decoration",
+            },
+            "açai & bowls": {
+                src: "/Firefly_GeminiFlash_CONSEGUE recriar a cena do restaurante para mim só que com seguinte temática de culin 81657.png",
+                alt: "Açai & Bowls decoration",
+            },
+            arabic: {
+                src: "/8CB1B9C1-CDF2-4F7D-814E-58DDBAA7EA98.png",
+                alt: "Arabic decoration",
+            },
+            "bakery/cafe": {
+                src: "/9E143867-75FF-4C66-818F-E84B5465ADBC.png",
+                alt: "Bakery/Cafe decoration",
+            },
+            argentine: {
+                src: "/60E7FCD8-D92C-49FF-A9D9-53EFF9737671Copia(2).png",
+                alt: "Argentine decoration",
+            },
+            "sandwich shop": {
+                src: "/Firefly_GeminiFlash_Consegue gerar a mesma imagem porém com a seguinte tematica- Sandwich Shop- 998742.png",
+                alt: "Sandwich Shop decoration",
+            },
+            desserts: {
+                src: "/Firefly_GeminiFlash_CONSEGUE recriar a cena do restaurante para mim só que com seguinte temática de culin 827994.png",
+                alt: "Desserts decoration",
+            },
+            bar: {
+                src: "/ChatGPT Image 23 de fev. de 2026, 11_20_17.png",
+                alt: "Bar decoration",
+            },
+        };
+
+        if (!selectedCategory) return null;
+        return decorationMap[selectedCategory] ?? null;
+    }, [category]);
     
     const [starsFilter, setStarsFilter] = useState("");
     const catalogById = useMemo(() => {
@@ -938,6 +1000,18 @@ const pageBackgroundStyle = useMemo<CSSProperties | undefined>(() => {
                             </div>
                         </div>
                     </section>
+
+                    {selectedCategoryDecoration ? (
+                        <div className="relative z-10 mt-4 w-full overflow-hidden rounded-3xl border border-white/25 bg-black/20 p-2 shadow-[0_12px_36px_rgba(0,0,0,0.35)]">
+                            <img
+                                src={selectedCategoryDecoration.src}
+                                alt={selectedCategoryDecoration.alt}
+                                className="h-40 w-full rounded-2xl object-cover sm:h-52 lg:h-64"
+                                loading="lazy"
+                                decoding="async"
+                            />
+                        </div>
+                    ) : null}
                 </header>
 
                 <section className="mt-4 m-3.5 min-w-2xl">
