@@ -1,0 +1,52 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isManager(restaurantId) {
+      return signedIn()
+        && request.auth.token.restaurantId == restaurantId
+        && request.auth.token.restaurantRole == "manager";
+    }
+
+    function isAttendant(restaurantId) {
+      return signedIn()
+        && request.auth.token.restaurantId == restaurantId
+        && request.auth.token.restaurantRole == "attendant";
+    }
+
+    match /restaurants/{restaurantId}/members/{uid} {
+      allow read: if signedIn();
+      allow write: if isManager(restaurantId);
+    }
+
+    match /restaurants/{restaurantId}/customers/{uid} {
+      allow read: if isManager(restaurantId) || isAttendant(restaurantId);
+      allow write: if isManager(restaurantId) || isAttendant(restaurantId);
+    }
+
+    match /restaurants/{restaurantId}/conversations/{conversationId} {
+      allow read: if isManager(restaurantId) || isAttendant(restaurantId);
+      allow create: if signedIn();
+      allow update: if isManager(restaurantId) || isAttendant(restaurantId);
+    }
+
+    match /restaurants/{restaurantId}/posts/{postId} {
+      allow read: if true;
+      allow write: if isManager(restaurantId) || isAttendant(restaurantId);
+    }
+
+    match /restaurants/{restaurantId}/catalog/{itemId} {
+      allow read: if true;
+      allow write: if isManager(restaurantId);
+    }
+
+    match /restaurants/{restaurantId}/orders/{orderId} {
+      allow read: if isManager(restaurantId) || isAttendant(restaurantId);
+      allow create: if signedIn();
+      allow update: if isManager(restaurantId);
+    }
+  }
+}
