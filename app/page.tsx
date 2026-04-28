@@ -1,6 +1,5 @@
-import AuthViewPage from "./authview/page";
-import DevAuthGate from "@/app/gate/devauthgate";
+import { redirect } from "next/navigation";
 
 export default function Home() {
-    return <DevAuthGate />;
+    redirect("/authview");
 }

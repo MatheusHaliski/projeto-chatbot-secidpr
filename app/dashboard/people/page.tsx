@@ -1,4 +1,5 @@
 import { getAdminFirestore } from "@/app/lib/firebaseAdmin";
+import type { CustomerRecord, MemberRecord } from "@/app/lib/hubModels";
 
 type PeoplePageProps = {
     searchParams?: Promise<{ restaurantId?: string; role?: string }>;
@@ -17,10 +18,13 @@ export default async function DashboardPeoplePage({ searchParams }: PeoplePagePr
     ]);
 
     const members = membersSnapshot.docs
-        .map((doc) => ({ uid: doc.id, ...doc.data() }))
+        .map((doc) => ({ uid: doc.id, ...(doc.data() as Omit<MemberRecord, "uid">) }))
         .filter((member) => roleFilter === "all" || member.role === roleFilter);
 
-    const customers = customersSnapshot.docs.map((doc) => ({ uid: doc.id, ...doc.data() }));
+    const customers = customersSnapshot.docs.map((doc) => ({
+        uid: doc.id,
+        ...(doc.data() as Omit<CustomerRecord, "uid">),
+    }));
 
     return (
         <main className="min-h-screen bg-black text-white p-6 space-y-8">
