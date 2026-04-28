@@ -30,6 +30,9 @@ const AUTH_VERIFY_EMAIL_GLOBAL_LIMIT_MAX = Number(
 const AUTH_VERIFY_LIMIT_WINDOW_MS = Number(
     process.env.AUTH_VERIFY_RATE_LIMIT_WINDOW_MS ?? "60000"
 );
+const AUTH_VERIFY_DB_TIMEOUT_MS = Number(
+    process.env.AUTH_VERIFY_DB_TIMEOUT_MS ?? "12000"
+);
 const buildSalt = (saltBase64: string) =>
     Buffer.concat([
         Buffer.from(saltBase64, "base64"),
@@ -159,11 +162,18 @@ export async function POST(request: NextRequest): Promise<Response> {
 
     try {
         const db = getAdminFirestore();
-        const snapshot = await db
-            .collection("VSusercontrol")
-            .where("email", "==", email)
-            .limit(1)
-            .get();
+        const snapshot = await Promise.race([
+            db
+                .collection("VSusercontrol")
+                .where("email", "==", email)
+                .limit(1)
+                .get(),
+            new Promise<never>((_, reject) => {
+                setTimeout(() => {
+                    reject(new Error("Auth verification query timed out."));
+                }, AUTH_VERIFY_DB_TIMEOUT_MS);
+            }),
+        ]);
 
         const record = snapshot.empty
             ? null
@@ -191,9 +201,16 @@ export async function POST(request: NextRequest): Promise<Response> {
         return NextResponse.json({ ok: true });
     } catch (error) {
         console.error("[Auth Verify API] credential check failed:", error);
+        const timedOut =
+            error instanceof Error &&
+            error.message === "Auth verification query timed out.";
         return NextResponse.json(
-            { error: "Unable to verify credentials right now." },
-            { status: 500 }
+            {
+                error: timedOut
+                    ? "Authentication is taking too long. Please try again."
+                    : "Unable to verify credentials right now.",
+            },
+            { status: timedOut ? 504 : 500 }
         );
     }
 }

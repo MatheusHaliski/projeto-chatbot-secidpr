@@ -16,6 +16,7 @@ export default function AuthViewClient() {
     const [password, setPassword] = useState("");
     const [submitting, setSubmitting] = useState(false);
     const pathname = usePathname();
+    const AUTH_REQUEST_TIMEOUT_MS = 15_000;
 
     useEffect(() => {
         if (pathname !== "/authview") return;
@@ -39,16 +40,21 @@ export default function AuthViewClient() {
             return;
         }
 
+        let timeoutId: number | undefined;
         try {
+            const controller = new AbortController();
+            timeoutId = window.setTimeout(() => {
+                controller.abort();
+            }, AUTH_REQUEST_TIMEOUT_MS);
             const response = await fetch("/api/auth/verify", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
+                signal: controller.signal,
                 body: JSON.stringify({
                     email: normalizedEmail,
                     password: normalizedPassword,
                 }),
             });
-
             if (!response.ok) {
                 const data = (await response.json().catch(() => null)) as
                     | { error?: string }
@@ -60,7 +66,6 @@ export default function AuthViewClient() {
                         "No account was found with these credentials."],
                     tone: "error",
                 });
-                setSubmitting(false);
                 return;
             }
 
@@ -71,11 +76,21 @@ export default function AuthViewClient() {
             router.replace("/restaurantcardspage");
         } catch (error) {
             console.error("[AuthView] Failed to verify credentials:", error);
+            const timedOut =
+                error instanceof DOMException && error.name === "AbortError";
             void VSModalPaged({
-                title: "Unexpected error",
-                messages: ["Unable to verify credentials right now."],
+                title: timedOut ? "Request timeout" : "Unexpected error",
+                messages: [
+                    timedOut
+                        ? "Authentication took too long. Please try again."
+                        : "Unable to verify credentials right now.",
+                ],
                 tone: "error",
             });
+        } finally {
+            if (timeoutId !== undefined) {
+                window.clearTimeout(timeoutId);
+            }
             setSubmitting(false);
         }
     };
