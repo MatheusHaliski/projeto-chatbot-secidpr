@@ -16,12 +16,60 @@ export default function AuthViewClient() {
     const [password, setPassword] = useState("");
     const [submitting, setSubmitting] = useState(false);
     const pathname = usePathname();
-    const AUTH_REQUEST_TIMEOUT_MS = 45_000;
+    const AUTH_REQUEST_TIMEOUT_MS = 15_000;
 
     useEffect(() => {
         if (pathname !== "/authview") return;
         clearAuthSessionToken();
     }, [pathname]);
+
+
+    const verifyCredentials = async (normalizedEmail: string, normalizedPassword: string) => {
+        const endpoints = ["/api/auth/verify", "/api/authview"];
+        let timeoutId: number | undefined;
+        let lastError: unknown = null;
+
+        for (const endpoint of endpoints) {
+            const controller = new AbortController();
+            try {
+                timeoutId = window.setTimeout(() => {
+                    controller.abort("auth-request-timeout");
+                }, AUTH_REQUEST_TIMEOUT_MS);
+
+                const response = await fetch(endpoint, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    signal: controller.signal,
+                    body: JSON.stringify({
+                        email: normalizedEmail,
+                        password: normalizedPassword,
+                    }),
+                });
+
+                if (response.ok) return;
+
+                const data = (await response.json().catch(() => null)) as
+                    | { error?: string }
+                    | null;
+
+                if (response.status >= 400 && response.status < 500) {
+                    throw new Error(data?.error ?? "No account was found with these credentials.");
+                }
+
+                lastError = new Error(data?.error ?? "Unable to verify credentials right now.");
+            } catch (error) {
+                lastError = error;
+            } finally {
+                if (timeoutId !== undefined) {
+                    window.clearTimeout(timeoutId);
+                    timeoutId = undefined;
+                }
+            }
+        }
+
+        throw lastError ?? new Error("Unable to verify credentials right now.");
+    };
+
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         if (submitting) return;
@@ -40,34 +88,8 @@ export default function AuthViewClient() {
             return;
         }
 
-        let timeoutId: number | undefined;
         try {
-            const controller = new AbortController();
-            timeoutId = window.setTimeout(() => {
-                controller.abort("auth-request-timeout");
-            }, AUTH_REQUEST_TIMEOUT_MS);
-            const response = await fetch("/api/auth/verify", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                signal: controller.signal,
-                body: JSON.stringify({
-                    email: normalizedEmail,
-                    password: normalizedPassword,
-                }),
-            });
-            if (!response.ok) {
-                const data = (await response.json().catch(() => null)) as
-                    | { error?: string }
-                    | null;
-                void VSModalPaged({
-                    title: "Access denied",
-                    messages:
-                        [data?.error ??
-                        "No account was found with these credentials."],
-                    tone: "error",
-                });
-                return;
-            }
+            await verifyCredentials(normalizedEmail, normalizedPassword);
 
             const token = crypto.randomUUID();
             setAuthSessionToken(token);
@@ -78,19 +100,20 @@ export default function AuthViewClient() {
             console.error("[AuthView] Failed to verify credentials:", error);
             const timedOut =
                 error instanceof DOMException && error.name === "AbortError";
+            const message =
+                error instanceof Error && error.message
+                    ? error.message
+                    : "Unable to verify credentials right now.";
             void VSModalPaged({
-                title: timedOut ? "Request timeout" : "Unexpected error",
+                title: timedOut ? "Request timeout" : "Access denied",
                 messages: [
                     timedOut
                         ? "Authentication took too long. Please try again."
-                        : "Unable to verify credentials right now.",
+                        : message,
                 ],
                 tone: "error",
             });
         } finally {
-            if (timeoutId !== undefined) {
-                window.clearTimeout(timeoutId);
-            }
             setSubmitting(false);
         }
     };
