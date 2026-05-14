@@ -1,21 +1,11 @@
 "use client";
-import Image from "next/image";
 import AuthShell2 from "../components/AuthShell2";
 import SignupForm from "./SignupForm";
-import { useEffect, useState } from "react";
-import {clearAuthSessionToken, setAuthSessionProfile, setAuthSessionToken} from "@/app/lib/authSession";
-import { getDevSessionToken,setDevSessionToken } from "@/app/lib/devSession";
-import {usePathname, useRouter} from "next/navigation";
+import { useEffect } from "react";
+import { clearAuthSessionToken } from "@/app/lib/authSession";
+import {usePathname} from "next/navigation";
 export default function SignupViewPage() {
     const pathname = usePathname();
-    const router = useRouter();
-    useEffect(() => {
-        const t = getDevSessionToken();
-        if (!t) {
-            router.replace("/");
-            return;
-        }
-    }, [router]);
 
     useEffect(() => {
         if (pathname !== "/signupview") return;
