@@ -102,7 +102,7 @@ export function RestaurantCardsInner() {
         () => new Set()
     );
     const [loading, setLoading] = useState(true);
-    const [loadingMore, setLoadingMore] = useState(false);
+    const [loadingMoreCatalog, setLoadingMoreCatalog] = useState(false);
     const [error, setError] = useState("");
     const [nextCursor, setNextCursor] = useState<string | null>(null);
     const [authProfile, setAuthProfile] = useState<AuthSessionProfile>(() =>
@@ -494,10 +494,20 @@ const pageBackgroundStyle = useMemo<CSSProperties | undefined>(() => {
                 setLoading(true);
                 setError("");
 
-                const payload = await fetchRestaurantsCatalogPage(null, pageSize);
+                const batchSize = 50;
+                const accumulated: Restaurant[] = [];
+                let cursor: string | null = null;
+
+                do {
+                    const payload = await fetchRestaurantsCatalogPage(cursor, batchSize);
+                    if (!isMounted) return;
+                    accumulated.push(...payload.catalog);
+                    setCatalog([...accumulated]);
+                    cursor = payload.nextCursor;
+                } while (cursor);
+
                 if (!isMounted) return;
-                setCatalog(payload.catalog);
-                setNextCursor(payload.nextCursor);
+                setNextCursor(null);
             } catch (err) {
                 console.error("[RestaurantCardsPage] load failed:", err);
                 if (isMounted) setError("Failed to load restaurants.");
@@ -513,17 +523,11 @@ const pageBackgroundStyle = useMemo<CSSProperties | undefined>(() => {
         };
     }, []);
 
-    const handleNextPage = () => {
-        if (currentPage < totalPages) {
-            setCurrentPage((prev) => prev + 1);
-        }
-    };
-
     const handleLoadMoreClick = async () => {
         if (!nextCursor) return;
 
         try {
-            setLoadingMore(true);
+            setLoadingMoreCatalog(true);
             const payload = await fetchRestaurantsCatalogPage(nextCursor, pageSize);
             setCatalog((prev) => [...prev, ...payload.catalog]);
             setNextCursor(payload.nextCursor);
@@ -531,12 +535,22 @@ const pageBackgroundStyle = useMemo<CSSProperties | undefined>(() => {
             console.error("[RestaurantCardsPage] catalog load more failed:", err);
             setError("Failed to load more restaurants.");
         } finally {
-            setLoadingMore(false);
+            setLoadingMoreCatalog(false);
+        }
+    };
+
+    const handleNextPage = async () => {
+        if (currentPage < totalPages) {
+            setCurrentPage((prev) => prev + 1);
+            return;
+        }
+        if (nextCursor && !loadingMoreCatalog) {
+            await handleLoadMoreClick();
+            setCurrentPage((prev) => prev + 1);
         }
     };
     const handleLoadMore = async (missingIds: string[]) => {
         try {
-            setLoadingMore(true);
             const items = await fetchRestaurantsByIds(missingIds);
             if (items.length) {
                 setDetailsById((prev) => {
@@ -561,8 +575,6 @@ const pageBackgroundStyle = useMemo<CSSProperties | undefined>(() => {
         } catch (err) {
             console.error("[RestaurantCardsPage] details load failed:", err);
             setError("Failed to load restaurant details.");
-        } finally {
-            setLoadingMore(false);
         }
     };
 
@@ -741,10 +753,13 @@ const pageBackgroundStyle = useMemo<CSSProperties | undefined>(() => {
                     <button
                         type="button"
                         onClick={handleNextPage}
-                        disabled={currentPage === totalPages}
+                        disabled={
+                            loadingMoreCatalog ||
+                            (currentPage === totalPages && !nextCursor)
+                        }
                         className="h-10 rounded-xl border border-white/25 bg-white/10 px-4 text-xs font-semibold text-white disabled:cursor-not-allowed disabled:opacity-40"
                     >
-                        {loadingMore ? "Loading…" : "Next"}
+                        {loadingMoreCatalog ? "Loading…" : "Next"}
                     </button>
                 </div>
             </div>
@@ -1143,10 +1158,10 @@ const pageBackgroundStyle = useMemo<CSSProperties | undefined>(() => {
                             <button
                                 type="button"
                                 onClick={handleLoadMoreClick}
-                                disabled={loadingMore}
+                                disabled={loadingMoreCatalog}
                                 className="h-11 rounded-2xl border border-white/30 bg-white/10 px-6 text-sm font-semibold text-white transition hover:bg-white/20 disabled:cursor-not-allowed disabled:opacity-50"
                             >
-                                {loadingMore ? "Loading more…" : "Load more restaurants"}
+                                {loadingMoreCatalog ? "Loading more…" : "Load more restaurants"}
                             </button>
                         </div>
                     ) : null}
