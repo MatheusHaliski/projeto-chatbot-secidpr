@@ -16,7 +16,7 @@ export default function AuthViewClient() {
     const [password, setPassword] = useState("");
     const [submitting, setSubmitting] = useState(false);
     const pathname = usePathname();
-    const AUTH_REQUEST_TIMEOUT_MS = 15_000;
+    const AUTH_REQUEST_TIMEOUT_MS = 30_000;
 
     useEffect(() => {
         if (pathname !== "/authview") return;
@@ -99,7 +99,8 @@ export default function AuthViewClient() {
         } catch (error) {
             console.error("[AuthView] Failed to verify credentials:", error);
             const timedOut =
-                error instanceof DOMException && error.name === "AbortError";
+                (error instanceof DOMException && error.name === "AbortError") ||
+                error === "auth-request-timeout";
             const message =
                 error instanceof Error && error.message
                     ? error.message
