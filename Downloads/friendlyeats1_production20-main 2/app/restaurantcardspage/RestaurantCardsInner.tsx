@@ -102,9 +102,8 @@ export function RestaurantCardsInner() {
         () => new Set()
     );
     const [loading, setLoading] = useState(true);
-    const [loadingMoreCatalog, setLoadingMoreCatalog] = useState(false);
+    const [loadingBackground, setLoadingBackground] = useState(false);
     const [error, setError] = useState("");
-    const [nextCursor, setNextCursor] = useState<string | null>(null);
     const [authProfile, setAuthProfile] = useState<AuthSessionProfile>(() =>
         getAuthSessionProfile()
     );
@@ -497,6 +496,7 @@ const pageBackgroundStyle = useMemo<CSSProperties | undefined>(() => {
                 const batchSize = 50;
                 const accumulated: Restaurant[] = [];
                 let cursor: string | null = null;
+                let firstBatch = true;
 
                 do {
                     const payload = await fetchRestaurantsCatalogPage(cursor, batchSize);
@@ -504,15 +504,20 @@ const pageBackgroundStyle = useMemo<CSSProperties | undefined>(() => {
                     accumulated.push(...payload.catalog);
                     setCatalog([...accumulated]);
                     cursor = payload.nextCursor;
+                    if (firstBatch) {
+                        firstBatch = false;
+                        setLoading(false);
+                        if (cursor) setLoadingBackground(true);
+                    }
                 } while (cursor);
-
-                if (!isMounted) return;
-                setNextCursor(null);
             } catch (err) {
                 console.error("[RestaurantCardsPage] load failed:", err);
                 if (isMounted) setError("Failed to load restaurants.");
             } finally {
-                if (isMounted) setLoading(false);
+                if (isMounted) {
+                    setLoading(false);
+                    setLoadingBackground(false);
+                }
             }
         }
 
@@ -523,29 +528,8 @@ const pageBackgroundStyle = useMemo<CSSProperties | undefined>(() => {
         };
     }, []);
 
-    const handleLoadMoreClick = async () => {
-        if (!nextCursor) return;
-
-        try {
-            setLoadingMoreCatalog(true);
-            const payload = await fetchRestaurantsCatalogPage(nextCursor, pageSize);
-            setCatalog((prev) => [...prev, ...payload.catalog]);
-            setNextCursor(payload.nextCursor);
-        } catch (err) {
-            console.error("[RestaurantCardsPage] catalog load more failed:", err);
-            setError("Failed to load more restaurants.");
-        } finally {
-            setLoadingMoreCatalog(false);
-        }
-    };
-
-    const handleNextPage = async () => {
+    const handleNextPage = () => {
         if (currentPage < totalPages) {
-            setCurrentPage((prev) => prev + 1);
-            return;
-        }
-        if (nextCursor && !loadingMoreCatalog) {
-            await handleLoadMoreClick();
             setCurrentPage((prev) => prev + 1);
         }
     };
@@ -733,6 +717,9 @@ const pageBackgroundStyle = useMemo<CSSProperties | undefined>(() => {
                         {Math.min(currentPage * pageSize, filteredIds.length)}
                     </span>{" "}
                     of <span className="font-semibold text-white">{filteredIds.length}</span> restaurants
+                    {loadingBackground ? (
+                        <span className="ml-3 text-xs text-white/70">(loading more…)</span>
+                    ) : null}
                 </div>
 
                 <div className="flex items-center gap-2">
@@ -753,13 +740,10 @@ const pageBackgroundStyle = useMemo<CSSProperties | undefined>(() => {
                     <button
                         type="button"
                         onClick={handleNextPage}
-                        disabled={
-                            loadingMoreCatalog ||
-                            (currentPage === totalPages && !nextCursor)
-                        }
+                        disabled={currentPage === totalPages}
                         className="h-10 rounded-xl border border-white/25 bg-white/10 px-4 text-xs font-semibold text-white disabled:cursor-not-allowed disabled:opacity-40"
                     >
-                        {loadingMoreCatalog ? "Loading…" : "Next"}
+                        Next
                     </button>
                 </div>
             </div>
@@ -1152,19 +1136,6 @@ const pageBackgroundStyle = useMemo<CSSProperties | undefined>(() => {
                     </div>
 
                     {renderPaginationNavbar()}
-
-                    {nextCursor ? (
-                        <div className="mt-5 flex justify-center">
-                            <button
-                                type="button"
-                                onClick={handleLoadMoreClick}
-                                disabled={loadingMoreCatalog}
-                                className="h-11 rounded-2xl border border-white/30 bg-white/10 px-6 text-sm font-semibold text-white transition hover:bg-white/20 disabled:cursor-not-allowed disabled:opacity-50"
-                            >
-                                {loadingMoreCatalog ? "Loading more…" : "Load more restaurants"}
-                            </button>
-                        </div>
-                    ) : null}
                 </section>
             </div>
         </div>
