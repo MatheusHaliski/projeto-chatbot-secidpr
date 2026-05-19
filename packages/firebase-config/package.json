@@ -1,0 +1,17 @@
+{
+  "name": "@decia/firebase-config",
+  "version": "1.0.0",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "type-check": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "firebase": "^10.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0",
+    "firebase": "^10.12.0"
+  }
+}
