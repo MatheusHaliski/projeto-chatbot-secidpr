@@ -74,32 +74,37 @@ export default async function botWebhookRoutes(server: FastifyInstance): Promise
             return reply.status(400).send({ success: false, error: 'Campos obrigatórios ausentes' });
           }
 
-          const sessionDoc = await db.collection('sessions').doc(body.data.sessionId).get();
-          if (!sessionDoc.exists || sessionDoc.data()!['status'] !== 'open') {
-            return reply.status(400).send({ success: false, error: 'Sessão não está aberta' });
-          }
-
-          const count = sessionDoc.data()!['opinionCount'] as number;
+          const sessionRef = db.collection('sessions').doc(body.data.sessionId);
           const max = workspace.settings.maxOpinionsPerSession;
-
-          if (count >= max) {
-            return reply.status(429).send({ success: false, error: 'Limite de opiniões atingido' });
-          }
-
           const opinionData = {
             author: body.data.author,
             authorId: body.data.authorId,
             content: body.data.content,
             timestamp: new Date(),
           };
+          const opinionRef = sessionRef.collection('opinions').doc();
 
-          const opRef = await db.collection('sessions').doc(body.data.sessionId)
-            .collection('opinions').add(opinionData);
+          const currentCount = await db.runTransaction(async (tx) => {
+            const sessionDoc = await tx.get(sessionRef);
+            if (!sessionDoc.exists || sessionDoc.data()!['status'] !== 'open') {
+              throw new Error('SESSION_NOT_OPEN');
+            }
 
-          await db.collection('sessions').doc(body.data.sessionId)
-            .update({ opinionCount: count + 1 });
+            if (sessionDoc.data()!['workspaceId'] !== workspace.id || sessionDoc.data()!['telegramChatId'] !== chatId) {
+              throw new Error('SESSION_FORBIDDEN');
+            }
 
-          return reply.send({ success: true, data: { id: opRef.id, ...opinionData, currentCount: count + 1, max } });
+            const count = sessionDoc.data()!['opinionCount'] as number;
+            if (count >= max) {
+              throw new Error('OPINION_LIMIT_REACHED');
+            }
+
+            tx.set(opinionRef, opinionData);
+            tx.update(sessionRef, { opinionCount: count + 1 });
+            return count + 1;
+          });
+
+          return reply.send({ success: true, data: { id: opinionRef.id, ...opinionData, currentCount, max } });
         }
 
         case 'analyze': {
@@ -110,6 +115,9 @@ export default async function botWebhookRoutes(server: FastifyInstance): Promise
           const sessionDoc = await db.collection('sessions').doc(body.data.sessionId).get();
           if (!sessionDoc.exists || sessionDoc.data()!['status'] !== 'open') {
             return reply.status(400).send({ success: false, error: 'Sessão não está disponível para análise' });
+          }
+          if (sessionDoc.data()!['workspaceId'] !== workspace.id || sessionDoc.data()!['telegramChatId'] !== chatId) {
+            return reply.status(403).send({ success: false, error: 'Sessão não pertence ao workspace/token informado' });
           }
 
           const opinionsSnap = await db.collection('sessions').doc(body.data.sessionId)
@@ -140,6 +148,14 @@ export default async function botWebhookRoutes(server: FastifyInstance): Promise
         case 'cancel_session': {
           if (!body.data.sessionId) {
             return reply.status(400).send({ success: false, error: 'sessionId é obrigatório' });
+          }
+
+          const sessionDoc = await db.collection('sessions').doc(body.data.sessionId).get();
+          if (!sessionDoc.exists) {
+            return reply.status(404).send({ success: false, error: 'Sessão não encontrada' });
+          }
+          if (sessionDoc.data()!['workspaceId'] !== workspace.id || sessionDoc.data()!['telegramChatId'] !== chatId) {
+            return reply.status(403).send({ success: false, error: 'Sessão não pertence ao workspace/token informado' });
           }
 
           await db.collection('sessions').doc(body.data.sessionId).update({
@@ -181,6 +197,15 @@ export default async function botWebhookRoutes(server: FastifyInstance): Promise
           return reply.status(400).send({ success: false, error: 'Ação desconhecida' });
       }
     } catch (err) {
+      if (err instanceof Error && err.message === 'OPINION_LIMIT_REACHED') {
+        return reply.status(429).send({ success: false, error: 'Limite de opiniões atingido' });
+      }
+      if (err instanceof Error && err.message === 'SESSION_NOT_OPEN') {
+        return reply.status(400).send({ success: false, error: 'Sessão não está aberta' });
+      }
+      if (err instanceof Error && err.message === 'SESSION_FORBIDDEN') {
+        return reply.status(403).send({ success: false, error: 'Sessão não pertence ao workspace/token informado' });
+      }
       server.log.error(err);
       return reply.status(500).send({ success: false, error: 'Erro interno ao processar requisição do bot' });
     }

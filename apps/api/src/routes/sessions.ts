@@ -46,6 +46,13 @@ export default async function sessionRoutes(server: FastifyInstance): Promise<vo
       if (!doc.exists) return reply.status(404).send({ success: false, error: 'Sessão não encontrada' });
 
       const data = doc.data()!;
+      const workspaceDoc = await db.collection('workspaces').doc(data['workspaceId']).get();
+      const wData = workspaceDoc.data()!;
+
+      if (user.role !== 'admin' && !wData['memberIds']?.includes(user.uid)) {
+        return reply.status(403).send({ success: false, error: 'Acesso negado' });
+      }
+
       if (data['status'] !== 'open') {
         return reply.status(400).send({ success: false, error: 'Sessão não está aberta para análise' });
       }
