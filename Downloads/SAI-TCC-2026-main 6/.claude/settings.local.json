@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3 -)",
+      "Bash(/opt/homebrew/bin/node \"/Users/matheushaliski/Downloads/SAI-TCC-2026-main 26/app/components/create-scheme/teste.js\")",
+      "Bash(awk -F= '{print length\\($2\\), \"chars, starts with:\", substr\\($2,1,4\\)}')",
+      "Bash(awk -F= '{print length\\($2\\), \"chars\"}')",
+      "Bash(grep -E \"\\\\.\\(tsx|ts\\)$\")",
+      "Bash(find /Users/matheushaliski/Downloads -type d -name \"SAI-TCC-2026-main*\" 2>/dev/null)",
+      "Read(//Users/matheushaliski/Downloads/**)"
+    ]
+  }
+}

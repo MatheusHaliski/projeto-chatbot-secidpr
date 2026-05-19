@@ -1,0 +1,114 @@
+{
+  "startedAt": "2026-05-18T01:56:36.301Z",
+  "finishedAt": "2026-05-18T01:56:56.572Z",
+  "durationSeconds": 20.27,
+  "dryRun": false,
+  "collectionFilter": null,
+  "projectId": "FuncionariosListaApp2025",
+  "databases": {
+    "source": "(default)",
+    "destination": "newsaidb"
+  },
+  "collections": {
+    "saiBrands": {
+      "sourceCollection": "sai-brands",
+      "destinationCollection": "saiBrands",
+      "sourceTotal": 8,
+      "destinationTotalAfter": 8,
+      "migrated": 8,
+      "skipped": 0,
+      "errors": 0
+    },
+    "saiMarkets": {
+      "sourceCollection": "sai-markets",
+      "destinationCollection": "saiMarkets",
+      "sourceTotal": 9,
+      "destinationTotalAfter": 9,
+      "migrated": 9,
+      "skipped": 0,
+      "errors": 0
+    },
+    "saiPieceItems": {
+      "sourceCollection": "sai-pieceItems",
+      "destinationCollection": "saiPieceItems",
+      "sourceTotal": 7,
+      "destinationTotalAfter": 7,
+      "migrated": 7,
+      "skipped": 0,
+      "errors": 0
+    },
+    "saiPipelineJobs": {
+      "sourceCollection": "sai-pipelineJobs",
+      "destinationCollection": "saiPipelineJobs",
+      "sourceTotal": 27,
+      "destinationTotalAfter": 27,
+      "migrated": 27,
+      "skipped": 0,
+      "errors": 0
+    },
+    "saiSchemes": {
+      "sourceCollection": "sai-scheme",
+      "destinationCollection": "saiSchemes",
+      "sourceTotal": 1,
+      "destinationTotalAfter": 1,
+      "migrated": 1,
+      "skipped": 0,
+      "errors": 0
+    },
+    "saiSchemeItems": {
+      "sourceCollection": "sai-schemeitem",
+      "destinationCollection": "saiSchemeItems",
+      "sourceTotal": 138,
+      "destinationTotalAfter": 138,
+      "migrated": 138,
+      "skipped": 0,
+      "errors": 0
+    },
+    "saiUsers": {
+      "sourceCollection": "sai-usercontrol",
+      "destinationCollection": "saiUsers",
+      "sourceTotal": 31,
+      "destinationTotalAfter": 31,
+      "migrated": 31,
+      "skipped": 0,
+      "errors": 0
+    },
+    "saiUserSavedSchemes": {
+      "sourceCollection": "sai-usersavedschemes",
+      "destinationCollection": "saiUserSavedSchemes",
+      "sourceTotal": 10,
+      "destinationTotalAfter": 10,
+      "migrated": 10,
+      "skipped": 0,
+      "errors": 0
+    },
+    "saiWardrobeItems": {
+      "sourceCollection": "sai-wardrobeItems",
+      "destinationCollection": "saiWardrobeItems",
+      "sourceTotal": 16,
+      "destinationTotalAfter": 16,
+      "migrated": 16,
+      "skipped": 0,
+      "errors": 0
+    },
+    "outfitSelections": {
+      "sourceCollection": "outfit_selection_2d",
+      "destinationCollection": "outfitSelections",
+      "sourceTotal": 2,
+      "destinationTotalAfter": 2,
+      "migrated": 2,
+      "skipped": 0,
+      "errors": 0
+    }
+  },
+  "convertedFields": {
+    "dateFieldsConverted": 309,
+    "nullFieldsRemoved": 310,
+    "booleansNormalized": 0,
+    "numbersNormalized": 0,
+    "credentialsMoved": 11,
+    "slugAdded": 7
+  },
+  "errors": [],
+  "status": "SUCCESS"
+}

@@ -1,0 +1,63 @@
+# StylistAI Blender GPU Worker
+FROM runpod/pytorch:1.0.2-cu1281-torch280-ubuntu2404
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1 \
+    PORT=8000 \
+    PYOPENGL_PLATFORM=egl \
+    LIBGL_ALWAYS_SOFTWARE=1
+
+WORKDIR /app
+
+# ── Headless OpenGL / EGL stack required by Blender 4.x ──────────────────────
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    # EGL / OpenGL
+    libegl1 \
+    libegl-mesa0 \
+    libgl1 \
+    libgl1-mesa-dri \
+    libgles2 \
+    libglx0 \
+    libglvnd0 \
+    libglvnd-dev \
+    # X11 stubs (Blender needs these even in headless mode)
+    libx11-6 \
+    libxext6 \
+    libxrender1 \
+    libxi6 \
+    libxxf86vm1 \
+    libxfixes3 \
+    # Display / session stubs
+    libsm6 \
+    libice6 \
+    # Runtime libs
+    libglib2.0-0 \
+    libgomp1 \
+    # Mesa utilities (for diagnostics: glxinfo, eglinfo)
+    mesa-utils \
+    # General utilities
+    ca-certificates \
+    curl \
+    && rm -rf /var/lib/apt/lists/* \
+    # Refresh linker cache so libEGL.so.1 is found at runtime
+    && ldconfig
+
+# ── Python dependencies ───────────────────────────────────────────────────────
+COPY blender-worker/requirements.txt /app/requirements.txt
+RUN pip install --upgrade pip && pip install -r /app/requirements.txt
+
+# ── Application source ────────────────────────────────────────────────────────
+COPY blender-worker/handler.py         /app/handler.py
+COPY blender-worker/controller.py      /app/controller.py
+COPY blender-worker/blender_pipeline.py /app/blender_pipeline.py
+COPY blender_common                    /app/blender_common
+
+# ── Startup diagnostic script ─────────────────────────────────────────────────
+COPY blender-worker/startup_diagnostics.sh /app/startup_diagnostics.sh
+RUN chmod +x /app/startup_diagnostics.sh
+
+EXPOSE 8000
+
+# Run diagnostics first, then start the server
+CMD ["/bin/bash", "-c", "/app/startup_diagnostics.sh && python -m uvicorn handler:app --host 0.0.0.0 --port 8000 --log-level info"]

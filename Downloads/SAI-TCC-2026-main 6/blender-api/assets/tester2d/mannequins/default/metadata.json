@@ -1,0 +1,15 @@
+{
+  "segmentation_mask": "blender-api/assets/tester2d/mannequins/default/segmentation_mask.png",
+  "occlusion_mask": "blender-api/assets/tester2d/mannequins/default/occlusion_mask.png",
+  "uv_like_map": "blender-api/assets/tester2d/mannequins/default/uv_like_map.png",
+  "landmarks": {
+    "neck_center": {"x": 0.5, "y": 0.13},
+    "left_shoulder_tip": {"x": 0.31, "y": 0.19},
+    "right_shoulder_tip": {"x": 0.69, "y": 0.19},
+    "left_armpit": {"x": 0.29, "y": 0.33},
+    "right_armpit": {"x": 0.71, "y": 0.33},
+    "waist_center": {"x": 0.5, "y": 0.61},
+    "left_hip": {"x": 0.36, "y": 0.78},
+    "right_hip": {"x": 0.64, "y": 0.78}
+  }
+}

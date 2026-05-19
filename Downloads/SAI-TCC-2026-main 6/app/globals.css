@@ -1,0 +1,554 @@
+:root {
+  --background: #f1f4ff;
+  --foreground: #eae8f1;
+  --page-gradient: linear-gradient(90deg, #2563eb 0%, #22c55e 55%, #38bdf8 100%);
+  --home-shell-bg:
+    linear-gradient(135deg, rgba(8, 10, 18, 0.78), rgba(25, 38, 58, 0.62)),
+    url('/Fart.png');
+  --sidebar-gradient: linear-gradient(135deg, #0b7a4a 0%, #075e39 45%, #05311f 100%);
+  --sidebar-gradient-soft: linear-gradient(135deg, #0b7a4a 0%, #075e39 45%, #05311f 100%);
+  --drawer-surface-bg: linear-gradient(135deg, #0b7a4a 0%, #075e39 45%, #05311f 100%);
+  --drawer-surface-border: rgba(255, 255, 255, 0.3);
+  --drawer-surface-shadow: 0 22px 50px rgba(12, 24, 18, 0.45);
+  --shell-foreground: #f8fafc;
+  --shell-theme-filter: brightness(1);
+  --liquid-glass-gradient:
+    linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.22) 0%,
+      rgba(214, 201, 255, 0.18) 32%,
+      rgba(255, 209, 220, 0.16) 64%,
+      rgba(255, 236, 214, 0.14) 100%
+    );
+  --liquid-glass-border: rgba(255, 255, 255, 0.28);
+  --liquid-glass-shadow:
+    0 8px 30px rgba(120, 80, 180, 0.12),
+    0 16px 44px rgba(120, 80, 180, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  --liquid-glass-blur: blur(22px) saturate(140%);
+}
+
+:root[data-theme='dark'] {
+  --background: #0c1222;
+  --foreground: #e5e7eb;
+  --page-gradient: linear-gradient(90deg, #0b1734 0%, #0f3f3b 50%, #15513a 100%);
+  --shell-foreground: #e2e8f0;
+  --shell-theme-filter: brightness(0.88) saturate(1.05);
+}
+
+:root[data-theme='light'] {
+  --background: #eef3fb;
+  --foreground: #0b1220;
+  --page-gradient:
+    radial-gradient(circle at 12% 16%, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.12) 48%),
+    radial-gradient(circle at 82% 8%, rgba(153, 194, 255, 0.38) 0%, rgba(191, 219, 254, 0) 44%),
+    linear-gradient(140deg, #f8fbff 0%, #ebf1fb 46%, #e6eef9 100%);
+  --home-shell-bg:
+    radial-gradient(circle at 14% 14%, rgba(255, 255, 255, 0.35) 0%, rgba(255, 255, 255, 0.04) 44%),
+    radial-gradient(circle at 84% 10%, rgba(191, 172, 255, 0.24) 0%, rgba(191, 172, 255, 0) 45%),
+    linear-gradient(130deg, rgba(235, 226, 255, 0.42) 0%, rgba(255, 214, 226, 0.34) 40%, rgba(206, 225, 255, 0.3) 72%, rgba(255, 234, 210, 0.26) 100%),
+    url('/Fart.png');
+  --sidebar-gradient: var(--liquid-glass-gradient);
+  --sidebar-gradient-soft: var(--liquid-glass-gradient);
+  --drawer-surface-bg: var(--liquid-glass-gradient);
+  --drawer-surface-border: var(--liquid-glass-border);
+  --drawer-surface-shadow: var(--liquid-glass-shadow);
+  --shell-foreground: #000000;
+  --shell-theme-filter: none;
+  --liquid-glass-gradient:
+    linear-gradient(
+      135deg,
+      rgba(11, 18, 32, 0.58) 0%,
+      rgba(30, 41, 59, 0.52) 40%,
+      rgba(51, 65, 85, 0.48) 100%
+    );
+  --liquid-glass-border: rgba(255, 255, 255, 0.22);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sharetech: var(--font-sharetech);
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+}
+
+body {
+  background-color: var(--background);
+  background-image: var(--page-gradient);
+  background-attachment: fixed;
+  color: var(--foreground);
+  font-family: var(--font-sharetech), "Share Tech Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
+
+.sa-auth-gradient-page {
+  background-color: var(--background);
+  background-image: url('/Firefly_Consegue adicionar quebras de linha tech ao gradiente (adicionar ranhuras) 3787887.jpg');
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  min-height: 100dvh;
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+}
+
+.fe-fragmented-texture {
+  background-color: #f8f6ef;
+  background-image:
+   url("/fai-2026.png");
+  background-position: 0 0;
+  background-size: 360px 360px;
+  background-repeat: repeat;
+}
+
+
+.fe-form-material {
+  background-color: #f4efe2;
+  background-image:
+    url("/Firefly_Consegue adicionar quebras de linha tech ao gradiente (adicionar ranhuras) 3787887.jpg");
+  background-position: 0 0;
+  background-size: 360px 360px;
+  background-repeat: repeat;
+}
+
+.fe-glass-panel {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.32), rgba(255, 255, 255, 0.12));
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.42);
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.25);
+}
+
+.vs-auth-alert-popup {
+  background: #f0f0f0;
+  border: 2px solid #facc15;
+  border-radius: 28px;
+  padding: 24px;
+  width: min(90vw, 460px);
+  min-height: 520px;
+  box-sizing: border-box;
+}
+
+.vs-auth-alert-html {
+  margin: 0;
+  padding-bottom: 0;
+}
+
+.vs-auth-alert-inner {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 24px 28px;
+  text-align: center;
+  color: rgba(177, 153, 46, 0.79);
+  text-decoration: #1d4ed8;
+}
+.vs-auth-alert-icon {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 12px;
+  color: #000000;
+}
+
+.vs-auth-alert-icon-svg {
+  width: 52px;
+  height: 52px;
+}
+
+.vs-auth-alert-title {
+  margin: 0 0 8px;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.vs-auth-alert-message {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.vs-auth-alert-button {
+  margin-top: 0px;
+  border-radius: 999px;
+  padding: 5px 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  background: #ffffff;
+  color: #ea580c;
+  border: 2px solid #facc15;
+  box-shadow: 0 10px 20px rgba(234, 88, 12, 0.2);
+  max-width: 100%;
+}
+
+.vs-auth-alert-button:hover {
+  background: #fff7ed;
+}
+
+.swal2-popup.vs-auth-alert-popup .swal2-actions {
+  margin-bottom: 12px 0 0;
+  padding: 0;
+}
+.vs-auth-alert-text{
+  color:orange;
+}
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.sa-premium-gradient-surface {
+  background-image: var(--sidebar-gradient);
+  box-shadow: var(--drawer-surface-shadow);
+}
+
+.sa-liquid-glass-premium {
+  border: 1px solid var(--liquid-glass-border);
+  background-image: var(--liquid-glass-gradient);
+  background-color: transparent;
+  backdrop-filter: var(--liquid-glass-blur);
+  -webkit-backdrop-filter: var(--liquid-glass-blur);
+  box-shadow: var(--liquid-glass-shadow);
+}
+
+.sa-liquid-glass-token {
+  border-color: var(--liquid-glass-border) !important;
+  background-image: var(--liquid-glass-gradient) !important;
+  background-color: transparent !important;
+  color: #000000 !important;
+  backdrop-filter: var(--liquid-glass-blur);
+  -webkit-backdrop-filter: var(--liquid-glass-blur);
+  box-shadow: var(--liquid-glass-shadow);
+}
+
+.sa-premium-gradient-surface-soft {
+  background-image: var(--sidebar-gradient-soft);
+  background-blend-mode: overlay;
+  box-shadow: 0 14px 45px rgba(16, 185, 129, 0.2);
+}
+
+
+.sa-home-shell {
+  position: relative;
+  isolation: isolate;
+  background-color: #0b3d2e;
+  background-image: var(--home-shell-bg);
+  background-attachment: fixed;
+  font-family: "Inter", "Segoe UI", "Trebuchet MS", Arial, sans-serif;
+  color: var(--shell-foreground);
+  filter: var(--shell-theme-filter);
+}
+
+.sa-home-shell::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  opacity: 0.35;
+}
+
+:root[data-home-shape='orb'] .sa-home-shell::before {
+  background:
+    radial-gradient(circle at 18% 30%, rgba(134, 239, 172, 0.55), transparent 44%),
+    radial-gradient(circle at 80% 70%, rgba(110, 231, 183, 0.45), transparent 38%);
+}
+
+:root[data-home-shape='diamond'] .sa-home-shell::before {
+  background-image:
+    linear-gradient(45deg, rgba(255, 255, 255, 0.16) 12%, transparent 12%),
+    linear-gradient(-45deg, rgba(255, 255, 255, 0.16) 12%, transparent 12%);
+  background-size: 130px 130px;
+}
+
+:root[data-home-shape='mesh'] .sa-home-shell::before {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.12) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.12) 1px, transparent 1px);
+  background-size: 44px 44px;
+}
+.sa-home-shell p,
+.sa-home-shell h1,
+.sa-home-shell h2,
+.sa-home-shell h3,
+.sa-home-shell h4,
+.sa-home-shell h5,
+.sa-home-shell span,
+.sa-home-shell li,
+.sa-home-shell a,
+.sa-home-shell button,
+.sa-home-shell input {
+  font-family: "Inter", "Segoe UI", "Trebuchet MS", Arial, sans-serif;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.sa-home-shell h1,
+.sa-home-shell h2,
+.sa-home-shell h3 {
+  font-weight: 700;
+}
+
+.sa-surface-header {
+  @apply bg-gradient-to-r from-[#1400c7] via-[#0f7f73] to-[#1ecb72] shadow-xl shadow-cyan-500/20;
+}
+
+.sa-surface-sidebar {
+  background-image: var(--sidebar-gradient);
+  box-shadow: var(--drawer-surface-shadow);
+}
+
+.sa-right-drawer {
+  border-color: var(--drawer-surface-border);
+  background-image: var(--drawer-surface-bg);
+  box-shadow: var(--drawer-surface-shadow);
+}
+
+.sa-right-drawer .sa-drawer-card,
+.sa-right-drawer .sa-drawer-action,
+.sa-right-drawer .sa-page-studio,
+.sa-right-drawer .sa-shape-chip,
+.sa-right-drawer .sa-apply-background {
+  border-color: var(--drawer-surface-border);
+  background-color: rgba(0, 0, 0, 0.24);
+  backdrop-filter: blur(8px);
+}
+
+.sa-surface-topbar {
+  @apply bg-gradient-to-r from-[#101530]/95 via-[#0f5c68]/95 to-[#14855f]/95 shadow-lg shadow-cyan-900/20;
+}
+
+.sa-surface-context {
+  @apply bg-gradient-to-br from-[#1320a0] via-[#168b7c] to-[#2ec27e] shadow-xl shadow-emerald-500/15;
+}
+
+html.dark-mode body {
+  background: #000 !important;
+  color: #fff !important;
+}
+
+html.dark-mode body :where(div, section, article, aside, main, nav, header, footer, form, label, fieldset, legend, span, p, h1, h2, h3, h4, h5, h6, ul, ol, li, a, button, input, textarea, select) {
+  background: #000 !important;
+  background-image: none !important;
+  color: #fff !important;
+  border-color: rgba(255, 255, 255, 0.5) !important;
+}
+
+html.dark-mode body input::placeholder,
+html.dark-mode body textarea::placeholder {
+  color: rgba(255, 255, 255, 0.75) !important;
+}
+
+:root[data-theme='dark'] .sa-right-drawer {
+  border-color: rgba(148, 163, 184, 0.35);
+  background-image: var(--drawer-surface-bg);
+  box-shadow: var(--drawer-surface-shadow);
+  filter: brightness(0.8) saturate(0.95);
+  color: #fff;
+}
+
+:root[data-theme='dark'] .sa-right-drawer p,
+:root[data-theme='dark'] .sa-right-drawer span,
+:root[data-theme='dark'] .sa-right-drawer h1,
+:root[data-theme='dark'] .sa-right-drawer h2,
+:root[data-theme='dark'] .sa-right-drawer h3,
+:root[data-theme='dark'] .sa-right-drawer a,
+:root[data-theme='dark'] .sa-right-drawer button,
+:root[data-theme='dark'] .sa-right-drawer label,
+:root[data-theme='dark'] .sa-right-drawer li,
+:root[data-theme='dark'] .sa-right-drawer article,
+:root[data-theme='dark'] .sa-right-drawer div {
+  color: #fff;
+}
+
+:root[data-theme='dark'] .sa-right-drawer button,
+:root[data-theme='dark'] .sa-right-drawer .sa-drawer-card,
+:root[data-theme='dark'] .sa-right-drawer .sa-drawer-action,
+:root[data-theme='dark'] .sa-right-drawer .sa-page-studio,
+:root[data-theme='dark'] .sa-right-drawer .sa-shape-chip,
+:root[data-theme='dark'] .sa-right-drawer .sa-apply-background {
+  border-color: rgba(148, 163, 184, 0.45);
+  background-image: linear-gradient(145deg, rgba(75, 85, 99, 0.76), rgba(55, 65, 81, 0.72), rgba(31, 41, 55, 0.74));
+}
+
+:root[data-theme='dark'] .sa-home-shell {
+  background-color: #030712;
+  background-image: linear-gradient(145deg, #111827 0%, #1f2937 55%, #374151 100%);
+  color: #fff;
+}
+
+:root[data-theme='dark'] .sa-home-shell :where(h1, h2, h3, h4, h5, h6, p, span, a, li, label, button) {
+  color: #fff;
+}
+
+:root[data-theme='dark'] .sa-surface-topbar,
+:root[data-theme='dark'] .sa-surface-header,
+:root[data-theme='dark'] .sa-surface-sidebar,
+:root[data-theme='dark'] .sa-surface-context,
+:root[data-theme='dark'] .sa-topbar-shell,
+:root[data-theme='dark'] .sa-topbar-action,
+:root[data-theme='dark'] .sa-home-logo-tile,
+:root[data-theme='dark'] .sa-topbar-search {
+  border-color: rgba(148, 163, 184, 0.55) !important;
+  background-image: linear-gradient(150deg, rgba(75, 85, 99, 0.9), rgba(55, 65, 81, 0.88), rgba(31, 41, 55, 0.92));
+  color: #fff !important;
+}
+
+:root[data-theme='dark'] .sa-topbar-search {
+  background-color: rgba(17, 24, 39, 0.85);
+}
+
+:root[data-theme='dark'] .sa-surface-sidebar {
+  background-image: var(--sidebar-gradient);
+  box-shadow: var(--drawer-surface-shadow);
+  filter: brightness(0.82) saturate(0.92);
+}
+
+:root[data-theme='dark'] .sa-topbar-search span,
+:root[data-theme='dark'] .sa-topbar-search input,
+:root[data-theme='dark'] .sa-topbar-search input::placeholder {
+  color: #fff !important;
+}
+
+:root[data-theme='light'] .sa-home-shell {
+  background-color: #f8fbff;
+  background-image: var(--home-shell-bg);
+  color: var(--shell-foreground);
+}
+
+:root[data-theme='light'][data-home-shape='none'] .sa-home-shell::before {
+  opacity: 0;
+  background: none;
+}
+
+:root[data-theme='light'][data-home-shape='orb'] .sa-home-shell::before {
+  opacity: 0.56;
+  background:
+    radial-gradient(circle at 18% 30%, rgba(255, 255, 255, 0.88), transparent 44%),
+    radial-gradient(circle at 80% 70%, rgba(214, 231, 255, 0.68), transparent 38%);
+}
+
+:root[data-theme='light'][data-home-shape='diamond'] .sa-home-shell::before {
+  opacity: 0.52;
+  background-image:
+    linear-gradient(45deg, rgba(255, 255, 255, 0.28) 12%, transparent 12%),
+    linear-gradient(-45deg, rgba(206, 226, 255, 0.22) 12%, transparent 12%);
+  background-size: 130px 130px;
+}
+
+:root[data-theme='light'][data-home-shape='mesh'] .sa-home-shell::before {
+  opacity: 0.48;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.28) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(200, 221, 255, 0.26) 1px, transparent 1px);
+  background-size: 44px 44px;
+}
+
+:root[data-theme='light'] .sa-home-shell {
+  color: #0b1220;
+}
+
+:root[data-theme='light'] .sa-right-drawer,
+:root[data-theme='light'] .sa-right-drawer .sa-drawer-card,
+:root[data-theme='light'] .sa-right-drawer .sa-drawer-action,
+:root[data-theme='light'] .sa-right-drawer .sa-page-studio,
+:root[data-theme='light'] .sa-right-drawer .sa-shape-chip,
+:root[data-theme='light'] .sa-right-drawer .sa-apply-background,
+:root[data-theme='light'] .sa-surface-topbar,
+:root[data-theme='light'] .sa-surface-header,
+:root[data-theme='light'] .sa-surface-sidebar,
+:root[data-theme='light'] .sa-surface-context,
+:root[data-theme='light'] .sa-topbar-shell,
+:root[data-theme='light'] .sa-topbar-action,
+:root[data-theme='light'] .sa-home-logo-tile,
+:root[data-theme='light'] .sa-topbar-search,
+:root[data-theme='light'] .sa-card,
+:root[data-theme='light'] .sa-panel,
+:root[data-theme='light'] .sa-glass {
+  border-color: var(--liquid-glass-border) !important;
+  background-image: var(--liquid-glass-gradient);
+  background-color: transparent !important;
+  color: #000000 !important;
+  backdrop-filter: var(--liquid-glass-blur);
+  -webkit-backdrop-filter: var(--liquid-glass-blur);
+  box-shadow: var(--liquid-glass-shadow);
+}
+
+:root[data-theme='light'] .sa-topbar-search input,
+:root[data-theme='light'] .sa-topbar-search input::placeholder,
+:root[data-theme='light'] .sa-right-drawer p,
+:root[data-theme='light'] .sa-right-drawer span,
+:root[data-theme='light'] .sa-right-drawer button,
+:root[data-theme='light'] .sa-right-drawer a,
+:root[data-theme='light'] .sa-topbar-search svg {
+  color: #000000 !important;
+}
+
+:root[data-theme='light'] .sa-surface-topbar .sa-topbar-title,
+:root[data-theme='light'] .sa-surface-sidebar .sa-sidebar-heading,
+:root[data-theme='light'] .sa-surface-sidebar .sa-sidebar-nav-item {
+  color: #000000 !important;
+}
+
+:root[data-theme='light'] .sa-surface-sidebar .sa-sidebar-nav-item .sa-sidebar-nav-helper,
+:root[data-theme='light'] .sa-surface-sidebar .sa-sidebar-nav-item svg {
+  color: rgba(0, 0, 0, 0.72) !important;
+}
+
+:root[data-theme='light'] .sa-surface-sidebar .sa-sidebar-nav-item:hover {
+  color: #000000 !important;
+}
+
+:root[data-theme='light'] .sa-home-shell :where(
+  h1, h2, h3, h4, h5, h6,
+  p, span, a, li, label, button,
+  input, textarea, select
+) {
+  color: #000000 !important;
+}
+
+:root[data-theme='light'] .sa-home-shell :where(
+  [class*='text-white/'],
+  [class*='text-slate-'],
+  [class*='text-zinc-']
+) {
+  color: rgba(0, 0, 0, 0.72) !important;
+}
+
+:root[data-theme='light'] .sa-home-shell :where(input, textarea)::placeholder {
+  color: rgba(0, 0, 0, 0.45) !important;
+}
+
+:root[data-theme='light'] .sa-home-shell :is(
+  .sa-surface-topbar,
+  .sa-surface-sidebar,
+  .sa-surface-header,
+  .sa-surface-context,
+  .sa-topbar-shell,
+  .sa-topbar-action,
+  .sa-home-logo-tile,
+  .sa-topbar-search,
+  .sa-right-drawer,
+  .sa-drawer-card,
+  .sa-drawer-action,
+  .sa-page-studio,
+  .sa-shape-chip,
+  .sa-apply-background,
+  .sa-card,
+  .sa-panel,
+  .sa-glass,
+  .sa-liquid-glass-token
+) {
+  border-color: var(--liquid-glass-border) !important;
+  background-image: var(--liquid-glass-gradient) !important;
+  background-color: transparent !important;
+  backdrop-filter: var(--liquid-glass-blur);
+  -webkit-backdrop-filter: var(--liquid-glass-blur);
+  box-shadow: var(--liquid-glass-shadow);
+}

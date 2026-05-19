@@ -1,0 +1,9 @@
+fastapi==0.115.12
+uvicorn[standard]==0.34.1
+pydantic==2.11.3
+numpy==2.2.4
+opencv-python-headless==4.11.0.86
+Pillow==11.2.1
+requests==2.32.3
+rembg==2.0.67
+trimesh==4.6.8

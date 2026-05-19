@@ -1,0 +1,46 @@
+{
+  "apphosting": [
+    {
+      "backendId": "my-backend-for-vse",
+      "rootDir": "/",
+      "ignore": ["node_modules", ".git", "firebase-debug.log", "firebase-debug.*.log", "functions"]
+    },
+    {
+      "backendId": "fg90-b2801",
+      "rootDir": "/",
+      "ignore": ["node_modules", ".git", "firebase-debug.log", "firebase-debug.*.log", "functions"]
+    },
+    {
+      "backendId": "bk-secid-app",
+      "rootDir": "/",
+      "ignore": ["node_modules", ".git", "firebase-debug.log", "firebase-debug.*.log", "functions"]
+    },
+    {
+      "backendId": "my-web-app",
+      "rootDir": "/",
+      "ignore": ["node_modules", ".git", "firebase-debug.log", "firebase-debug.*.log", "functions"]
+    },
+    {
+      "backendId": "res1004bk3562",
+      "rootDir": "/",
+      "ignore": ["node_modules", ".git", "firebase-debug.log", "firebase-debug.*.log", "functions"]
+    },
+    {
+      "backendId": "cak0495r4b",
+      "rootDir": "/",
+      "ignore": ["node_modules", ".git", "firebase-debug.log", "firebase-debug.*.log", "functions"]
+    }
+  ],
+  "firestore": [
+    {
+      "database": "(default)",
+      "rules": "firestore.default.rules",
+      "indexes": "firestore.default.indexes.json"
+    },
+    {
+      "database": "newsaidb",
+      "rules": "firestore.rules",
+      "indexes": "firestore.indexes.json"
+    }
+  ]
+}
