@@ -1,0 +1,64 @@
+version: '3.9'
+
+services:
+  firebase-emulator:
+    image: gcr.io/google.com/cloudsdktool/cloud-sdk:latest
+    ports:
+      - '4000:4000'   # Emulator UI
+      - '8080:8080'   # Firestore
+      - '9099:9099'   # Auth
+    command: >
+      bash -c "gcloud components install cloud-firestore-emulator beta --quiet &&
+               firebase emulators:start --only firestore,auth --project demo-decia"
+    volumes:
+      - ./firebase.json:/firebase.json:ro
+      - ./firestore.rules:/firestore.rules:ro
+      - ./firestore.indexes.json:/firestore.indexes.json:ro
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:4000']
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build:
+      context: ./apps/api
+      dockerfile: Dockerfile
+    ports:
+      - '3001:3001'
+    env_file: .env
+    environment:
+      - NODE_ENV=development
+      - FIRESTORE_EMULATOR_HOST=firebase-emulator:8080
+      - FIREBASE_AUTH_EMULATOR_HOST=firebase-emulator:9099
+    volumes:
+      - ./apps/api/src:/app/src
+    depends_on:
+      firebase-emulator:
+        condition: service_healthy
+    restart: unless-stopped
+
+  bot:
+    build:
+      context: ./apps/bot
+      dockerfile: Dockerfile
+    env_file: .env
+    environment:
+      - API_BASE_URL=http://api:3001
+    depends_on:
+      - api
+    restart: unless-stopped
+
+  web:
+    build:
+      context: ./apps/web
+      dockerfile: Dockerfile
+    ports:
+      - '3000:3000'
+    env_file: .env
+    environment:
+      - NODE_ENV=development
+      - NEXT_PUBLIC_API_BASE_URL=http://localhost:3001
+    depends_on:
+      - api
+    restart: unless-stopped

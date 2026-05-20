@@ -1,0 +1,64 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && request.auth.token.role == 'admin';
+    }
+
+    function isWorkspaceMember(workspaceId) {
+      return isSignedIn() &&
+        exists(/databases/$(database)/documents/workspaces/$(workspaceId)) &&
+        request.auth.uid in get(/databases/$(database)/documents/workspaces/$(workspaceId)).data.memberIds;
+    }
+
+    function isWorkspaceOwner(workspaceId) {
+      return isSignedIn() &&
+        exists(/databases/$(database)/documents/workspaces/$(workspaceId)) &&
+        get(/databases/$(database)/documents/workspaces/$(workspaceId)).data.ownerId == request.auth.uid;
+    }
+
+    // Users collection: each user reads/writes only their own document
+    match /users/{userId} {
+      allow read, write: if isSignedIn() && request.auth.uid == userId;
+      allow read: if isAdmin();
+    }
+
+    // Workspaces: members can read, owners can write, admins can read all
+    match /workspaces/{workspaceId} {
+      allow read: if isWorkspaceMember(workspaceId) || isAdmin();
+      allow create: if isSignedIn();
+      allow update: if isWorkspaceOwner(workspaceId) || isAdmin();
+      allow delete: if isWorkspaceOwner(workspaceId) || isAdmin();
+    }
+
+    // Sessions: workspace members can read/write
+    match /sessions/{sessionId} {
+      allow read: if isAdmin() ||
+        (isSignedIn() && isWorkspaceMember(resource.data.workspaceId));
+      allow create: if isSignedIn();
+      allow update: if isAdmin() ||
+        (isSignedIn() && isWorkspaceMember(resource.data.workspaceId));
+      allow delete: if isAdmin() ||
+        (isSignedIn() && isWorkspaceMember(resource.data.workspaceId));
+
+      // Opinions subcollection
+      match /opinions/{opinionId} {
+        allow read: if isAdmin() ||
+          (isSignedIn() && isWorkspaceMember(get(/databases/$(database)/documents/sessions/$(sessionId)).data.workspaceId));
+        allow create: if isSignedIn();
+        allow update, delete: if false;
+      }
+    }
+
+    // Audit logs: only writable by service account (no client reads)
+    match /audit_logs/{logId} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+  }
+}
