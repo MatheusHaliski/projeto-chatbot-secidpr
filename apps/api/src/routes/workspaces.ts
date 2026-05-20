@@ -127,7 +127,7 @@ export default async function workspaceRoutes(server: FastifyInstance): Promise<
       await auditService.log({
         workspaceId: id, action: 'workspace.updated',
         actorId: user.uid, actorType: 'user',
-        metadata: Object.keys(body.data),
+        metadata: { updatedFields: Object.keys(body.data) },
       });
 
       return reply.send({ success: true, data: { id, ...updates } });
